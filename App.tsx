@@ -18,6 +18,7 @@ import {
     Text,
     useColorScheme,
     View,
+    Image,
 } from 'react-native';
 
 import {
@@ -64,10 +65,14 @@ function App(): JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
+        <View >
+            <Image source={require('./cat-logo.png')} />
+        </View>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
             <Section title="ROUTES" onPressHandler={() => {Alert.alert("foo")}}/>
             <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}}/>
