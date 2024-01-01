@@ -18,7 +18,6 @@ import {
     Text,
     useColorScheme,
     View,
-    Image,
 } from 'react-native';
 
 import {
@@ -65,12 +64,13 @@ function App(): JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <View >
+        <View style={styles.logoView}>
             <Image source={require('./cat-logo.png')} />
         </View>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            alignItems: 'center'
           }}>
 
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
@@ -98,6 +98,11 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  logoView:  {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white'
   },
 });
 
