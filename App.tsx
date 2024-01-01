@@ -37,7 +37,7 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): J
         style={[
           styles.sectionTitle,
           {
-            color: {isDarkMode} ? Colors.light : Colors.dark,
+            color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}
         onPress={onPressHandler}
@@ -47,8 +47,26 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): J
   );
 }
 
+type PageProps = PropsWithChildren<{
+    currentPage: string;
+    setPage: GestureResponderEvent;
+    isDarkMode: boolean;
+}>;
+
+function Page({children, currentPage, setPage, isDarkMode}): JSX.Element {
+    return (
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+            <Section title="ROUTES" onPressHandler={() => {Alert.alert(currentPage) }} isDarkMode={isDarkMode}/>
+            <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}} isDarkMode={isDarkMode}/>
+        </View>
+    );
+}
+
 function App(): JSX.Element {
-    const [name, setName] = useState("Asshole");
+  const [page, setPage] = useState("main");
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -68,13 +86,7 @@ function App(): JSX.Element {
             <Image source={require('./cat-logo.png')} />
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
         </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Section title="ROUTES" onPressHandler={() => {Alert.alert("foo") }} isDarkMode={isDarkMode}/>
-            <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}} isDarkMode={isDarkMode}/>
-        </View>
+        <Page isDarkMode={isDarkMode} currentPage={page} setPage={setPage} />
       </ScrollView>
     </SafeAreaView>
   );
