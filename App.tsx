@@ -27,17 +27,17 @@ import {
 type SectionProps = PropsWithChildren<{
     onPressHandler: GestureResponderEvent;
     title: string;
+    isDarkMode: boolean;
 }>;
 
-function Section({children, title, onPressHandler}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function Section({children, title, onPressHandler, isDarkMode}: SectionProps): JSX.Element {
   return (
     <View style={styles.sectionContainer}>
       <Button
         style={[
           styles.sectionTitle,
           {
-            color: isDarkMode ? Colors.light : Colors.dark,
+            color: {isDarkMode} ? Colors.light : Colors.dark,
           },
         ]}
         onPress={onPressHandler}
@@ -66,16 +66,14 @@ function App(): JSX.Element {
         style={backgroundStyle}>
         <View style={styles.logoView}>
             <Image source={require('./cat-logo.png')} />
+            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
         </View>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            alignItems: 'center'
           }}>
-
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-            <Section title="ROUTES" onPressHandler={() => {Alert.alert("foo")}}/>
-            <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}}/>
+            <Section title="ROUTES" onPressHandler={() => {Alert.alert("foo") }} isDarkMode={isDarkMode}/>
+            <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}} isDarkMode={isDarkMode}/>
         </View>
       </ScrollView>
     </SafeAreaView>
