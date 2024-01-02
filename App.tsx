@@ -24,6 +24,10 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
 
+
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
 type SectionProps = PropsWithChildren<{
     onPressHandler: GestureResponderEvent;
     title: string;
@@ -47,26 +51,7 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): J
   );
 }
 
-type PageProps = PropsWithChildren<{
-    currentPage: string;
-    setPage: GestureResponderEvent;
-    isDarkMode: boolean;
-}>;
-
-function Page({children, currentPage, setPage, isDarkMode}): JSX.Element {
-    return (
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Section title="ROUTES" onPressHandler={() => {Alert.alert(currentPage) }} isDarkMode={isDarkMode}/>
-            <Section title="STOPS" onPressHandler={() => {Alert.alert("bar")}} isDarkMode={isDarkMode}/>
-        </View>
-    );
-}
-
-function App(): JSX.Element {
-  const [page, setPage] = useState("main");
+const HomeScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -86,10 +71,100 @@ function App(): JSX.Element {
             <Image source={require('./cat-logo.png')} />
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
         </View>
-        <Page isDarkMode={isDarkMode} currentPage={page} setPage={setPage} />
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+            <Section title="ROUTES" onPressHandler={() => {navigation.navigate('Routes') }} isDarkMode={isDarkMode}/>
+            <Section title="STOPS" onPressHandler={() => {navigation.navigate('Stops') }} isDarkMode={isDarkMode}/>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+const RoutesScreen = ({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <View style={styles.logoView}>
+            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+            <Section title="Route 1" onPressHandler={() => {Alert.alert("Route 1") }} isDarkMode={isDarkMode}/>
+            <Section title="Route 2" onPressHandler={() => {Alert.alert("Route 2")}} isDarkMode={isDarkMode}/>
+            <Section title="Route 3" onPressHandler={() => {Alert.alert("Route 3")}} isDarkMode={isDarkMode}/>
+            <Section title="Route 4" onPressHandler={() => {Alert.alert("Route 4")}} isDarkMode={isDarkMode}/>
+            <Section title="Route 5" onPressHandler={() => {Alert.alert("Route 5")}} isDarkMode={isDarkMode}/>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+const StopsScreen = ({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <View style={styles.logoView}>
+            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+            <Section title="Stop 1" onPressHandler={() => {Alert.alert("Stop 1") }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 2" onPressHandler={() => {Alert.alert("Stop 2")}} isDarkMode={isDarkMode}/>
+            <Section title="Stop 3" onPressHandler={() => {Alert.alert("Stop 3")}} isDarkMode={isDarkMode}/>
+            <Section title="Stop 4" onPressHandler={() => {Alert.alert("Stop 4")}} isDarkMode={isDarkMode}/>
+            <Section title="Stop 5" onPressHandler={() => {Alert.alert("Stop 5")}} isDarkMode={isDarkMode}/>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const Stack = createNativeStackNavigator();
+
+function App(): JSX.Element {
+    return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name='Home'
+          component={HomeScreen}
+          options={{title: 'Welcome'}}/>
+        <Stack.Screen name="Routes" component={RoutesScreen} />
+        <Stack.Screen name="Stops" component={StopsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    );
 }
 
 const styles = StyleSheet.create({
