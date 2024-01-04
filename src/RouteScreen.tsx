@@ -1,6 +1,7 @@
 import {
     Alert,
     Button,
+    FlatList,
     GestureResponderEvent,
     Image,
     SafeAreaView,
@@ -32,19 +33,19 @@ const RouteScreen = ({navigation, route}) => {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
         <View style={styles.logoView}>
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
         </View>
         <View
-          style={{
+          style={[{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Text>Route Id: {JSON.stringify(busRouteId)}</Text>
+          }, styles.sectionDescription]}>
+          <Text>Stop Id: {JSON.stringify(busRouteId)}</Text>
+          <Text>Stop Name: Route {JSON.stringify(busRouteId)}</Text>
+          <FlatList
+            data={[{stopId: '1', key: 'item1'}, {stopId: '2', key: 'item2'}]}
+            renderItem={({item}) => <Text>Stop Id: {item.stopId} </Text>}/>
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 }

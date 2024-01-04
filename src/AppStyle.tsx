@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         fontSize: 18,
         fontWeight: '400',
+        alignItems: 'center',
       },
       highlight: {
         fontWeight: '700',

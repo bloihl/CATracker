@@ -1,6 +1,7 @@
 import {
     Alert,
     Button,
+    FlatList,
     GestureResponderEvent,
     Image,
     SafeAreaView,
@@ -30,23 +31,23 @@ const StopScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+        <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+        />
         <View style={styles.logoView}>
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
         </View>
         <View
-          style={{
+          style={[{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
+          }, styles.sectionDescription]}>
           <Text>Stop Id: {JSON.stringify(stopId)}</Text>
+          <Text>Stop Name: Stop {JSON.stringify(stopId)}</Text>
+          <FlatList
+            data={[{routeId: '1', key: 'item1'}, {routeId: '2', key: 'item2'}]}
+            renderItem={({item}) => <Text>Route Id: {item.routeId} </Text>}/>
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 }
