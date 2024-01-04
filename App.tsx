@@ -106,11 +106,11 @@ const RoutesScreen = ({navigation}) => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-            <Section title="Route 1" onPressHandler={() => {navigation.navigate('Route') }} isDarkMode={isDarkMode}/>
-            <Section title="Route 2" onPressHandler={() => {navigation.navigate('Route') }} isDarkMode={isDarkMode}/>
-            <Section title="Route 3" onPressHandler={() => {navigation.navigate('Route') }} isDarkMode={isDarkMode}/>
-            <Section title="Route 4" onPressHandler={() => {navigation.navigate('Route') }} isDarkMode={isDarkMode}/>
-            <Section title="Route 5" onPressHandler={() => {navigation.navigate('Route') }} isDarkMode={isDarkMode}/>
+            <Section title="Route 1" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 1}) }} isDarkMode={isDarkMode}/>
+            <Section title="Route 2" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 2}) }} isDarkMode={isDarkMode}/>
+            <Section title="Route 3" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 3}) }} isDarkMode={isDarkMode}/>
+            <Section title="Route 4" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 4}) }} isDarkMode={isDarkMode}/>
+            <Section title="Route 5" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 5}) }} isDarkMode={isDarkMode}/>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -139,19 +139,50 @@ const StopsScreen = ({navigation}) => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-            <Section title="Stop 1" onPressHandler={() => {navigation.navigate('Stop') }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 2" onPressHandler={() => {navigation.navigate('Stop') }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 3" onPressHandler={() => {navigation.navigate('Stop') }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 4" onPressHandler={() => {navigation.navigate('Stop') }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 5" onPressHandler={() => {navigation.navigate('Stop') }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 1" onPressHandler={() => {navigation.navigate('Stop', {stopId: 1}) }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 2" onPressHandler={() => {navigation.navigate('Stop', {stopId: 2}) }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 3" onPressHandler={() => {navigation.navigate('Stop', {stopId: 3}) }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 4" onPressHandler={() => {navigation.navigate('Stop', {stopId: 4}) }} isDarkMode={isDarkMode}/>
+            <Section title="Stop 5" onPressHandler={() => {navigation.navigate('Stop', {stopId: 5}) }} isDarkMode={isDarkMode}/>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const RouteScreen = ({navigation}) => {
+const RouteScreen = ({navigation, route}) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const { busRouteId } = route.params;
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <View style={styles.logoView}>
+            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+          <Text>Route Id: {JSON.stringify(busRouteId)}</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const StopScreen = ({navigation, route}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+  const { stopId } = route.params
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -173,37 +204,7 @@ const RouteScreen = ({navigation}) => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Text>Route X</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const StopScreen = ({navigation}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={styles.logoView}>
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Text>Stop X</Text>
+          <Text>Stop Id: {JSON.stringify(stopId)}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
