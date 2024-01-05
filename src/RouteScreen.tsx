@@ -36,8 +36,8 @@ const RouteScreen = ({navigation, route}) => {
           style={[{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }, styles.sectionDescription]}>
-          <Text>Stop Id: {JSON.stringify(busRouteId)}</Text>
-          <Text>Stop Name: Route {JSON.stringify(busRouteId)}</Text>
+          <Text>Route Id: {JSON.stringify(busRouteId)}</Text>
+          <Text>Route Name: Route {JSON.stringify(busRouteId)}</Text>
           <FlatList
             data={[{stopId: '1', key: 'item1'}, {stopId: '2', key: 'item2'}]}
             renderItem={({item}) => <Text>Stop Id: {item.stopId} </Text>}/>
