@@ -1,14 +1,7 @@
 import type {PropsWithChildren} from 'react';
 import {
-    Alert,
     Button,
-    GestureResponderEvent, Image,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    useColorScheme,
+    GestureResponderEvent,
     View,
 } from 'react-native';
 

@@ -1,8 +1,4 @@
 import {
-    Alert,
-    Button,
-    GestureResponderEvent,
-    Image,
     SafeAreaView,
     ScrollView,
     StatusBar,
