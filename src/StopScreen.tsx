@@ -38,11 +38,11 @@ const StopScreen = ({navigation, route}) => {
           style={[{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }, styles.sectionDescription]}>
-          <Text>Stop Id: {JSON.stringify(stopId)}</Text>
-          <Text>Stop Name: Stop {JSON.stringify(stopId)}</Text>
+          <Text>Stop Id: {stopId}</Text>
+          <Text>Stop Name: Stop {stopId}</Text>
           <Text>Stop Location: Nw Corner of Here and There parking lot</Text>
           <FlatList
-            data={[{routeId: '1', key: 'item1'}, {routeId: '2', key: 'item2'}]}
+            data={[{routeId: 1, key: 'item1'}, {routeId: 2, key: 'item2'}]}
             renderItem={({item}) => {
                 const titleString = `Route ${item.routeId}`;
                 return <Section title={titleString}
