@@ -40,9 +40,16 @@ const StopScreen = ({navigation, route}) => {
           }, styles.sectionDescription]}>
           <Text>Stop Id: {JSON.stringify(stopId)}</Text>
           <Text>Stop Name: Stop {JSON.stringify(stopId)}</Text>
+          <Text>Stop Location: Nw Corner of Here and There parking lot</Text>
           <FlatList
             data={[{routeId: '1', key: 'item1'}, {routeId: '2', key: 'item2'}]}
-            renderItem={({item}) => <Text>Route Id: {item.routeId} </Text>}/>
+            renderItem={({item}) => {
+                const titleString = `Route ${item.routeId}`;
+                return <Section title={titleString}
+                    onPressHandler={() => {navigation.navigate('Route', {busRouteId: `${ item.routeId }`}) }}
+                    isDarkMode={isDarkMode}/>;
+                }
+            }/>
         </View>
     </SafeAreaView>
   );

@@ -40,7 +40,13 @@ const RouteScreen = ({navigation, route}) => {
           <Text>Route Name: Route {JSON.stringify(busRouteId)}</Text>
           <FlatList
             data={[{stopId: '1', key: 'item1'}, {stopId: '2', key: 'item2'}]}
-            renderItem={({item}) => <Text>Stop Id: {item.stopId} </Text>}/>
+            renderItem={({item}) => {
+                const titleString = `Stop ${item.stopId}`;
+                return <Section title={titleString}
+                    onPressHandler={() => {navigation.navigate('Stop', {stopId: `${ item.stopId }`}) }}
+                    isDarkMode={isDarkMode} />;
+            } }
+          />
         </View>
     </SafeAreaView>
   );
