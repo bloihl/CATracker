@@ -1,7 +1,5 @@
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
+    FlatList,
     StatusBar,
     Text,
     useColorScheme,
@@ -13,37 +11,23 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import styles from 'AppStyle.tsx';
+import CatScreen from 'CatScreen.tsx';
 import Section from 'Section.tsx';
 
 function HomeScreen({navigation}): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <CatScreen isDarkMode={isDarkMode}>
+      <FlatList
+        data={[{title: 'ROUTES', key: 'Routes'}, {title: 'STOPS', key: 'Stops'}]}
+        renderItem={({item}) => {
+            return <Section title={item.title}
+                onPressHandler={() => {navigation.navigate(`${ item.key }`) }}
+                isDarkMode={isDarkMode} />;
+        } }
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={styles.logoView}>
-            <Image source={require('./cat-logo.png')} />
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Section title="ROUTES" onPressHandler={() => {navigation.navigate('Routes') }} isDarkMode={isDarkMode}/>
-            <Section title="STOPS" onPressHandler={() => {navigation.navigate('Stops') }} isDarkMode={isDarkMode}/>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    </CatScreen>
   );
 }
 

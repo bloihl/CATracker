@@ -1,7 +1,5 @@
 import {
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
+    FlatList,
     StyleSheet,
     Text,
     useColorScheme,
@@ -14,38 +12,22 @@ import {
 
 import styles from 'AppStyle.tsx';
 import Section from 'Section.tsx';
+import CatScreen from 'CatScreen.tsx';
 
 const StopsScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={styles.logoView}>
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Section title="Stop 1" onPressHandler={() => {navigation.navigate('Stop', {stopId: 1}) }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 2" onPressHandler={() => {navigation.navigate('Stop', {stopId: 2}) }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 3" onPressHandler={() => {navigation.navigate('Stop', {stopId: 3}) }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 4" onPressHandler={() => {navigation.navigate('Stop', {stopId: 4}) }} isDarkMode={isDarkMode}/>
-            <Section title="Stop 5" onPressHandler={() => {navigation.navigate('Stop', {stopId: 5}) }} isDarkMode={isDarkMode}/>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <CatScreen isDarkMode={isDarkMode}>
+        <FlatList
+            data={[{title: 'Stop 1', id: 1}, {title: 'Stop 2', id: 2}, {title: 'Stop 3', id: 3}, {title: 'Stop 4', id: 4}]}
+            renderItem={({item}) => {
+                return <Section title={item.title}
+                    onPressHandler={() => {navigation.navigate('Stop',{stopId: `${ item.id }`}) }}
+                    isDarkMode={isDarkMode} />;
+            } }
+          />
+      </CatScreen>
   );
 }
 

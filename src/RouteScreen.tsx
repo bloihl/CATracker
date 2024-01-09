@@ -1,8 +1,5 @@
 import {
     FlatList,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
     StyleSheet,
     Text,
     useColorScheme,
@@ -15,6 +12,7 @@ import {
 
 import styles from 'AppStyle.tsx';
 import Section from 'Section.tsx';
+import CatScreen from 'CatScreen.tsx';
 
 const RouteScreen = ({navigation, route}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -24,18 +22,7 @@ const RouteScreen = ({navigation, route}) => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-        <View style={styles.logoView}>
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-        </View>
-        <View
-          style={[{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }, styles.sectionDescription]}>
+      <CatScreen isDarkMode={isDarkMode}>
           <Text>Route Id: {busRouteId}</Text>
           <Text>Route Name: Route {busRouteId}</Text>
           <FlatList
@@ -47,8 +34,7 @@ const RouteScreen = ({navigation, route}) => {
                     isDarkMode={isDarkMode} />;
             } }
           />
-        </View>
-    </SafeAreaView>
+      </CatScreen>
   );
 }
 export default RouteScreen

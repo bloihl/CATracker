@@ -1,7 +1,5 @@
 import {
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
+    FlatList,
     StyleSheet,
     Text,
     useColorScheme,
@@ -14,39 +12,23 @@ import {
 
 import styles from 'AppStyle.tsx';
 import Section from 'Section.tsx';
+import CatScreen from 'CatScreen.tsx';
 
 
 const RoutesScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={styles.logoView}>
-            <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Section title="Route 1" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 1}) }} isDarkMode={isDarkMode}/>
-            <Section title="Route 2" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 2}) }} isDarkMode={isDarkMode}/>
-            <Section title="Route 3" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 3}) }} isDarkMode={isDarkMode}/>
-            <Section title="Route 4" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 4}) }} isDarkMode={isDarkMode}/>
-            <Section title="Route 5" onPressHandler={() => {navigation.navigate('Route', {busRouteId: 5}) }} isDarkMode={isDarkMode}/>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <CatScreen isDarkMode={isDarkMode}>
+        <FlatList
+            data={[{title: 'Route 1', id: 1}, {title: 'Route 2', id: 2}, {title: 'Route 3', id: 3}, {title: 'Route 4', id: 4}]}
+            renderItem={({item}) => {
+                return <Section title={item.title}
+                    onPressHandler={() => {navigation.navigate('Route', {busRouteId: `${ item.id }`}) }}
+                    isDarkMode={isDarkMode} />;
+            } }
+          />
+      </CatScreen>
   );
 }
 
