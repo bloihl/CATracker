@@ -1,19 +1,9 @@
 import {
-    FlatList,
-    StyleSheet,
-    Text,
     useColorScheme,
-    View,
 } from 'react-native';
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
-
-import styles from 'AppStyle.tsx';
 import Section from 'Section.tsx';
 import CatScreen from 'CatScreen.tsx';
-
 
 const RoutesScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';

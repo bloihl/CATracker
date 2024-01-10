@@ -1,19 +1,14 @@
 import {
-    FlatList,
-    StyleSheet,
     Text,
     useColorScheme,
-    View,
 } from 'react-native';
 
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
 
-import styles from 'AppStyle.tsx';
 import Section from 'Section.tsx';
 import CatScreen from 'CatScreen.tsx';
-
 
 const StopScreen = ({navigation, route}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -22,7 +17,6 @@ const StopScreen = ({navigation, route}) => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
 
   return (
     <CatScreen isDarkMode={isDarkMode}

@@ -2,9 +2,7 @@ import type {PropsWithChildren} from 'react';
 import {
     FlatList,
     SafeAreaView,
-    StatusBar,
     Text,
-    useColorScheme,
     View,
 } from 'react-native';
 

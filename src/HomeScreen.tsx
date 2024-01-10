@@ -1,16 +1,7 @@
 import {
-    FlatList,
-    StatusBar,
-    Text,
     useColorScheme,
-    View,
 } from 'react-native';
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
-
-import styles from 'AppStyle.tsx';
 import CatScreen from 'CatScreen.tsx';
 import Section from 'Section.tsx';
 
