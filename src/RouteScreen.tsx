@@ -10,7 +10,7 @@ import {
 import Section from 'Section.tsx';
 import CatScreen from 'CatScreen.tsx';
 
-const RouteScreen = ({navigation, route}) => {
+function RouteScreen ({navigation, route}): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const { busRouteId } = route.params;
   const backgroundStyle = {

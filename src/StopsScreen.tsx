@@ -5,7 +5,7 @@ import {
 import Section from 'Section.tsx';
 import CatScreen from 'CatScreen.tsx';
 
-const StopsScreen = ({navigation}) => {
+function StopsScreen({navigation}): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
