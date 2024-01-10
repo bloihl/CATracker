@@ -23,20 +23,20 @@ const StopScreen = ({navigation, route}) => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+
   return (
-    <CatScreen isDarkMode={isDarkMode}>
-      <Text>Stop Id: {stopId}</Text>
-      <Text>Stop Name: Stop {stopId}</Text>
-      <Text>Stop Location: Nw Corner of Here and There parking lot</Text>
-      <FlatList
+    <CatScreen isDarkMode={isDarkMode}
         data={[{routeId: 1, key: 'item1'}, {routeId: 2, key: 'item2'}]}
-        renderItem={({item}) => {
+        renderDataItem={({item}) => {
             const titleString = `Route ${item.routeId}`;
             return <Section title={titleString}
                 onPressHandler={() => {navigation.navigate('Route', {busRouteId: `${ item.routeId }`}) }}
                 isDarkMode={isDarkMode}/>;
             }
-        }/>
+        }>
+       <Text>Stop Id: {stopId}</Text>
+       <Text>Stop Name: Stop {stopId}</Text>
+       <Text>Stop Location: Nw Corner of Here and There parking lot</Text>
     </CatScreen>
   );
 }

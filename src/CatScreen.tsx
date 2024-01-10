@@ -1,8 +1,7 @@
 import type {PropsWithChildren} from 'react';
 import {
-    Image,
+    FlatList,
     SafeAreaView,
-    ScrollView,
     StatusBar,
     Text,
     useColorScheme,
@@ -15,27 +14,30 @@ import {
 
 import styles from 'AppStyle.tsx';
 import CatHeader from 'CatHeader.tsx';
+import Section from 'Section.tsx';
 
 type CatScreenProps = PropsWithChildren<{
+    data: ArrayLike
+    renderDataItem: {}
     isDarkMode: boolean;
 }>;
 
-function CatScreen({children, isDarkMode}: CatScreenProps): JSX.Element {
+function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps): JSX.Element {
    const backgroundStyle = {
      backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
    };
 
   return (
     <SafeAreaView style={backgroundStyle}>
-
-        <CatHeader />
-
-        <View
-          style={[{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }, styles.sectionDescription]}>
-            { children }
-        </View>
+        <FlatList
+            ListHeaderComponent={<CatHeader>{children}</CatHeader>}
+            data={data}
+            renderItem={renderDataItem}
+            ListFooterComponent={
+                <View style={styles.logoView}>
+                    <Text>Data current as of Jan 1, 2024</Text>
+                </View>}
+            />
     </SafeAreaView>
   );
 }

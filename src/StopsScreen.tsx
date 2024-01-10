@@ -18,16 +18,14 @@ const StopsScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-      <CatScreen isDarkMode={isDarkMode}>
-        <FlatList
+      <CatScreen isDarkMode={isDarkMode}
             data={[{title: 'Stop 1', id: 1}, {title: 'Stop 2', id: 2}, {title: 'Stop 3', id: 3}, {title: 'Stop 4', id: 4}]}
-            renderItem={({item}) => {
+            renderDataItem={({item}) => {
                 return <Section title={item.title}
                     onPressHandler={() => {navigation.navigate('Stop',{stopId: `${ item.id }`}) }}
                     isDarkMode={isDarkMode} />;
             } }
           />
-      </CatScreen>
   );
 }
 

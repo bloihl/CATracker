@@ -18,16 +18,14 @@ function HomeScreen({navigation}): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <CatScreen isDarkMode={isDarkMode}>
-      <FlatList
+    <CatScreen isDarkMode={isDarkMode}
         data={[{title: 'ROUTES', key: 'Routes'}, {title: 'STOPS', key: 'Stops'}]}
-        renderItem={({item}) => {
+        renderDataItem={({item}) => {
             return <Section title={item.title}
                 onPressHandler={() => {navigation.navigate(`${ item.key }`) }}
                 isDarkMode={isDarkMode} />;
         } }
       />
-    </CatScreen>
   );
 }
 

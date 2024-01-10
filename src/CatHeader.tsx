@@ -16,7 +16,7 @@ type CatHeaderProps = PropsWithChildren<{
     isDarkMode: boolean;
 }>;
 
-function CatHeader({isDarkMode}: CatHeaderProps): JSX.Element {
+function CatHeader({children, isDarkMode}: CatHeaderProps): JSX.Element {
    const backgroundStyle = {
      backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
    };
@@ -29,6 +29,7 @@ function CatHeader({isDarkMode}: CatHeaderProps): JSX.Element {
                 />
             <Image source={require('./cat-logo.png')} />
             <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
+            {children}
         </View>
   );
 }
