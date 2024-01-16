@@ -23,7 +23,7 @@ function HomeScreen({navigation}): JSX.Element {
           />
         );
       }}
-      />
+    />
   );
 }
 
