@@ -1,20 +1,15 @@
+import React from 'react';
 import type {PropsWithChildren} from 'react';
-import {
-    Button,
-    GestureResponderEvent,
-    View,
-} from 'react-native';
+import {Button, GestureResponderEvent, View} from 'react-native';
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-import styles from 'AppStyle.tsx';
+import styles from 'AppStyle';
 
 type SectionProps = PropsWithChildren<{
-    onPressHandler: GestureResponderEvent;
-    title: string;
-    isDarkMode: boolean;
+  onPressHandler: GestureResponderEvent;
+  title: string;
+  isDarkMode: boolean;
 }>;
 
 function Section({children, title, onPressHandler, isDarkMode}: SectionProps): JSX.Element {
@@ -28,9 +23,9 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): J
           },
         ]}
         onPress={onPressHandler}
-        title={title}>
-      </Button>
+        title={title}
+      />
     </View>
   );
 }
-export default Section
+export default Section;
