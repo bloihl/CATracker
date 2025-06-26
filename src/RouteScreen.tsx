@@ -20,9 +20,9 @@ function RouteScreen({navigation, route}): JSX.Element {
         return (
           <Section
             title={titleString}
-            onPressHandler={() => {
-              navigation.navigate('Stop', {stopId: `${item.stopId}`});
-            }}
+            onPressHandler={() =>
+              navigation.navigate('Stop', {stopId: `${item.stopId}`})
+            }
             isDarkMode={isDarkMode}
           />
         );
