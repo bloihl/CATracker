@@ -3,12 +3,12 @@ import {ActivityIndicator, View, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import HomeScreen from './src/HomeScreen';
-import RoutesScreen from './src/RoutesScreen';
-import RouteScreen from './src/RouteScreen';
-import StopsScreen from './src/StopsScreen';
-import StopScreen from './src/StopScreen';
-import useGTFSData from './src/hooks/useGTFSData'; // Import the hook
+import HomeScreen from 'HomeScreen';
+import RoutesScreen from 'RoutesScreen';
+import RouteScreen from 'RouteScreen';
+import StopsScreen from 'StopsScreen';
+import StopScreen from 'StopScreen';
+import useGTFSData from './src/hooks/useGTFSData';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,7 +49,6 @@ function App(): JSX.Element {
           {(props) => <StopsScreen {...props} stops={data.stops} />}
         </Stack.Screen>
         <Stack.Screen name="Stop" component={StopScreen} />
-        {/* We'll add TripsScreen later if needed */}
       </Stack.Navigator>
     </NavigationContainer>
   );
