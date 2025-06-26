@@ -1,26 +1,45 @@
 import React from 'react';
-import {useColorScheme} from 'react-native';
+import {useColorScheme, Text, View} from 'react-native';
 
-import Section from 'Section';
-import CatScreen from 'CatScreen';
+import Section from './Section'; // Assuming Section is in src
+import CatScreen from './CatScreen'; // Assuming CatScreen is in src
 
-function StopsScreen({navigation}): JSX.Element {
+// Define an interface for the stop item if available from GTFS data structure
+// For now, using 'any' for flexibility, but should be replaced with actual type
+interface StopItem {
+  stop_name?: string;
+  stop_code?: string;
+  stop_id: string;
+  // Add other relevant stop properties here
+}
+
+interface StopsScreenProps {
+  navigation: any; // Replace with more specific navigation type if available
+  stops: StopItem[];
+}
+
+function StopsScreen({navigation, stops}: StopsScreenProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  if (!stops || stops.length === 0) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text>No stops data available.</Text>
+      </View>
+    );
+  }
 
   return (
     <CatScreen
       isDarkMode={isDarkMode}
-      data={[
-        {title: 'Stop 1', id: 1},
-        {title: 'Stop 2', id: 2},
-        {title: 'Stop 3', id: 3},
-        {title: 'Stop 4', id: 4},
-      ]}
-      renderDataItem={({item}) => {
+      data={stops}
+      renderDataItem={({item}: {item: StopItem}) => {
+        // Use stop_name or fallback to stop_id
+        const title = item.stop_name || `Stop ID: ${item.stop_id}`;
         return (
           <Section
-            title={item.title}
-            onPressHandler={() => {navigation.navigate('Stop',{stopId: `${ item.id }`}) }}
+            title={title}
+            onPressHandler={() => {navigation.navigate('Stop',{stopId: `${item.stop_id}`}) }}
             isDarkMode={isDarkMode}
           />
         );
