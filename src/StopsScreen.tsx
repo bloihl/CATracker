@@ -4,7 +4,6 @@ import {useColorScheme, Text, View} from 'react-native';
 import Section from 'Section';
 import CatScreen from 'CatScreen';
 
-// Define an interface for the stop item if available from GTFS data structure
 // For now, using 'any' for flexibility, but should be replaced with actual type
 interface StopItem {
   stop_name?: string;
@@ -14,7 +13,7 @@ interface StopItem {
 }
 
 interface StopsScreenProps {
-  navigation: any; // Replace with more specific navigation type if available
+  navigation: any;
   stops: StopItem[];
 }
 
