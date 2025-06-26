@@ -18,7 +18,9 @@ function HomeScreen({navigation}): JSX.Element {
         return (
           <Section
             title={item.title}
-            onPressHandler={() => { navigation.navigate(`${item.key}`); }}
+            onPressHandler={() =>
+              navigation.navigate(`${item.key}`)
+            }
             isDarkMode={isDarkMode}
           />
         );
