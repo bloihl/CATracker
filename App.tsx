@@ -11,7 +11,7 @@ import StopScreen from '@/StopScreen';
 
 const Stack = createNativeStackNavigator();
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   // GTFS dynamic lookup removed; providing empty data placeholders for now
   const data = { routes: [], stops: [] };
   const scheme = useColorScheme();

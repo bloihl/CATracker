@@ -9,7 +9,7 @@ type CatHeaderProps = PropsWithChildren<{
   isDarkMode: boolean;
 }>;
 
-function CatHeader({children, isDarkMode}: CatHeaderProps): JSX.Element {
+function CatHeader({children, isDarkMode}: CatHeaderProps): React.JSX.Element {
   const { colors } = useTheme();
   const backgroundStyle = {
     backgroundColor: colors.background,

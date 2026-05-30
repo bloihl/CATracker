@@ -4,7 +4,7 @@ import {Text, useColorScheme} from 'react-native';
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
 
-function RouteScreen({navigation, route}): JSX.Element {
+function RouteScreen({navigation, route}): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const {busRouteId} = route.params;
 

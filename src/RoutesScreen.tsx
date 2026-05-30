@@ -17,7 +17,7 @@ interface RoutesScreenProps {
   routes: RouteItem[];
 }
 
-function RoutesScreen({navigation, routes}: RoutesScreenProps): JSX.Element {
+function RoutesScreen({navigation, routes}: RoutesScreenProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   if (!routes || routes.length === 0) {

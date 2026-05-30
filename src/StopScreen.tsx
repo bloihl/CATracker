@@ -5,7 +5,7 @@ import {Text, useColorScheme} from 'react-native';
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
 
-function StopScreen({navigation, route}): JSX.Element {
+function StopScreen({navigation, route}): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const {stopId} = route.params;
 

@@ -17,7 +17,7 @@ interface StopsScreenProps {
   stops: StopItem[];
 }
 
-function StopsScreen({navigation, stops}: StopsScreenProps): JSX.Element {
+function StopsScreen({navigation, stops}: StopsScreenProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   if (!stops || stops.length === 0) {

@@ -8,12 +8,12 @@ import styles from '@/AppStyle';
 import CatHeader from '@/CatHeader';
 
 type CatScreenProps = PropsWithChildren<{
-  data: ArrayLike;
+  data: ArrayLike<object>;
   renderDataItem: {};
   isDarkMode: boolean;
 }>;
 
-function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps): JSX.Element {
+function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps): React.JSX.Element {
   const { colors } = useTheme();
   const backgroundStyle = {
     backgroundColor: colors.background,
