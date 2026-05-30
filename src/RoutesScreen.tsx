@@ -38,7 +38,7 @@ function RoutesScreen({navigation, routes}: RoutesScreenProps): JSX.Element {
           <Section
             title={title}
             onPressHandler={() =>
-              navigation.navigate('Route', {busRouteId: `${item.route_id}`});
+              navigation.navigate('Route', {busRouteId: `${item.route_id}`})
             }
             isDarkMode={isDarkMode}
           />

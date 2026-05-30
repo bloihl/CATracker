@@ -1,40 +1,23 @@
-import React, {useEffect} from 'react';
-import {ActivityIndicator, View, Text} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import React from 'react';
+import { useColorScheme } from 'react-native';
+import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import HomeScreen from 'HomeScreen';
-import RoutesScreen from 'RoutesScreen';
-import RouteScreen from 'RouteScreen';
-import StopsScreen from 'StopsScreen';
-import StopScreen from 'StopScreen';
-import useGTFSData from './src/hooks/useGTFSData';
+import HomeScreen from '@/HomeScreen';
+import RoutesScreen from '@/RoutesScreen';
+import RouteScreen from '@/RouteScreen';
+import StopsScreen from '@/StopsScreen';
+import StopScreen from '@/StopScreen';
 
 const Stack = createNativeStackNavigator();
 
 function App(): JSX.Element {
-  const { data, loading, error } = useGTFSData();
-
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-        <Text>Loading GTFS data...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Error loading GTFS data:</Text>
-        <Text>{error.message}</Text>
-      </View>
-    );
-  }
+  // GTFS dynamic lookup removed; providing empty data placeholders for now
+  const data = { routes: [], stops: [] };
+  const scheme = useColorScheme();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
         <Stack.Screen
           name="Home"

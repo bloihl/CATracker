@@ -1,18 +1,18 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {Image, StatusBar, Text, View} from 'react-native';
+import {useTheme} from '@react-navigation/native';
 
 import styles from 'AppStyle';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 type CatHeaderProps = PropsWithChildren<{
   isDarkMode: boolean;
 }>;
 
 function CatHeader({children, isDarkMode}: CatHeaderProps): JSX.Element {
+  const { colors } = useTheme();
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: colors.background,
   };
 
   return (
@@ -22,7 +22,7 @@ function CatHeader({children, isDarkMode}: CatHeaderProps): JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <Image source={require('./cat-logo.png')} />
-      <Text style={[styles.sectionTitle]}>Columbia Area Transit Tracker</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Columbia Area Transit Tracker</Text>
       {children}
     </View>
   );

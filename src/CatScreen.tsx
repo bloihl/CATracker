@@ -2,7 +2,7 @@ import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {useTheme} from '@react-navigation/native';
 
 import styles from 'AppStyle';
 import CatHeader from 'CatHeader';
@@ -14,8 +14,9 @@ type CatScreenProps = PropsWithChildren<{
 }>;
 
 function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps): JSX.Element {
+  const { colors } = useTheme();
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: colors.background,
   };
 
   return (
@@ -28,7 +29,7 @@ function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps)
         renderItem={renderDataItem}
         ListFooterComponent={
           <View style={styles.logoView}>
-            <Text>Data current as of Jan 1, 2024</Text>
+            <Text style={{ color: colors.text }}>Data current as of Jan 1, 2024</Text>
           </View>
         }
       />
