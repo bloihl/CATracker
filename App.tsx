@@ -1,5 +1,6 @@
 import React from 'react';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -12,8 +13,17 @@ import StopScreen from '@/StopScreen';
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  // GTFS dynamic lookup removed; providing empty data placeholders for now
-  const data = { routes: [], stops: [] };
+  // GTFS dynamic lookup removed; providing sample data placeholders for now
+  const data = {
+    routes: [
+      { route_id: '1', route_short_name: 'Blue', route_long_name: 'Blue Line' },
+      { route_id: '2', route_short_name: 'Green', route_long_name: 'Green Line' },
+    ],
+    stops: [
+      { stop_id: '100', stop_name: 'Main & 1st', stop_code: 'M1' },
+      { stop_id: '200', stop_name: 'Central Station', stop_code: 'CEN' },
+    ],
+  };
   const scheme = useColorScheme();
 
   return (

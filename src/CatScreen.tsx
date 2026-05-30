@@ -1,6 +1,7 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
-import {FlatList, SafeAreaView, Text, View, ListRenderItem} from 'react-native';
+import {FlatList, Text, View, ListRenderItem} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {useTheme} from '@react-navigation/native';
 
