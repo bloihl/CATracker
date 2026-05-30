@@ -3,7 +3,7 @@ import type {PropsWithChildren} from 'react';
 import {Image, StatusBar, Text, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
-import styles from 'AppStyle';
+import styles from '@/AppStyle';
 
 type CatHeaderProps = PropsWithChildren<{
   isDarkMode: boolean;

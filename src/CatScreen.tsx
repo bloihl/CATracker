@@ -4,8 +4,8 @@ import {FlatList, SafeAreaView, Text, View} from 'react-native';
 
 import {useTheme} from '@react-navigation/native';
 
-import styles from 'AppStyle';
-import CatHeader from 'CatHeader';
+import styles from '@/AppStyle';
+import CatHeader from '@/CatHeader';
 
 type CatScreenProps = PropsWithChildren<{
   data: ArrayLike;

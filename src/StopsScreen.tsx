@@ -1,8 +1,8 @@
 import React from 'react';
 import {useColorScheme, Text, View} from 'react-native';
 
-import Section from 'Section';
-import CatScreen from 'CatScreen';
+import Section from '@/Section';
+import CatScreen from '@/CatScreen';
 
 // For now, using 'any' for flexibility, but should be replaced with actual type
 interface StopItem {
