@@ -4,7 +4,7 @@ import {useColorScheme} from 'react-native';
 import CatScreen from '@/CatScreen';
 import Section from '@/Section';
 
-function HomeScreen({navigation}): React.JSX.Element {
+function HomeScreen({navigation}: { navigation: any }): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (

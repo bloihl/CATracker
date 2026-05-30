@@ -1,19 +1,19 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
-import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import {FlatList, SafeAreaView, Text, View, ListRenderItem} from 'react-native';
 
 import {useTheme} from '@react-navigation/native';
 
 import styles from '@/AppStyle';
 import CatHeader from '@/CatHeader';
 
-type CatScreenProps = PropsWithChildren<{
-  data: ArrayLike<object>;
-  renderDataItem: {};
+type CatScreenProps<T> = PropsWithChildren<{
+  data: ReadonlyArray<T>;
+  renderDataItem: ListRenderItem<T>;
   isDarkMode: boolean;
 }>;
 
-function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps): React.JSX.Element {
+function CatScreen<T>({children, data, renderDataItem, isDarkMode}: CatScreenProps<T>): React.JSX.Element {
   const { colors } = useTheme();
   const backgroundStyle = {
     backgroundColor: colors.background,
@@ -21,7 +21,7 @@ function CatScreen({children, data, renderDataItem, isDarkMode}: CatScreenProps)
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <FlatList
+      <FlatList<T>
         ListHeaderComponent={
           <CatHeader isDarkMode={isDarkMode}>{children}</CatHeader>
         }
