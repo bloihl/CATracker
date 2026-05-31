@@ -10,15 +10,26 @@ import RouteScreen from '@/RouteScreen';
 import StopsScreen from '@/StopsScreen';
 import StopScreen from '@/StopScreen';
 import SettingsScreen from '@/SettingsScreen';
-import {runDbHealthcheck} from "@/db/healthcheck.ts";
+import { runDbHealthcheck } from '@/db/healthcheck';
+import { runMigrations } from '@/db/migrations';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
   useEffect(() => {
-    if (__DEV__) {
-      runDbHealthcheck();
-    }
+    // Run schema migrations on app startup (non-blocking)
+    (async () => {
+      try {
+        await runMigrations();
+        if (__DEV__) {
+          runDbHealthcheck();
+        }
+      } catch (e) {
+        if (__DEV__) {
+          console.warn('[db] migrations error:', e);
+        }
+      }
+    })();
   }, []);
   // GTFS dynamic lookup removed; providing sample data placeholders for now
   const data = {
