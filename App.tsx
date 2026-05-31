@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useColorScheme, Button } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -22,7 +21,7 @@ function App(): React.JSX.Element {
       try {
         await runMigrations();
         if (__DEV__) {
-          runDbHealthcheck();
+          await runDbHealthcheck();
         }
       } catch (e) {
         if (__DEV__) {
