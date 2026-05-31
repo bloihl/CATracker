@@ -9,7 +9,7 @@ function toArray(params?: SQLParams): any[] | undefined {
   return Object.values(params as Record<string, any>);
 }
 
-export async function createWebSqlJsDatabase(options?: DatabaseFactoryOptions): Promise<DB> {
+export async function createWebSqlJsDatabase(_options?: DatabaseFactoryOptions): Promise<DB> {
   // Lazy load sql.js (must be available as a dependency and served with wasm)
   const initSqlJs = (await import('sql.js')).default as any;
   const SQL = await initSqlJs({});
@@ -58,7 +58,7 @@ export async function createWebSqlJsDatabase(options?: DatabaseFactoryOptions): 
     db.exec('BEGIN');
     try {
       const tx: Transaction = { execute: (sql: string, params?: SQLParams) => runSingle(sql, params) };
-      const result = await Promise.resolve(fn(tx));
+      const result = await fn(tx);
       db.exec('COMMIT');
       return result;
     } catch (e) {

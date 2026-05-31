@@ -22,7 +22,7 @@ export async function createQuickSQLiteDatabase(options?: DatabaseFactoryOptions
     api.open(dbName);
   }
   // Prefer the global proxy if present (this build shape injects it)
-  const proxy: any = (globalThis as any)?.__QuickSQLiteProxy || (global as any)?.__QuickSQLiteProxy || null;
+  const proxy: any = (globalThis as any)?.__QuickSQLiteProxy || null;
 
   function exec(sql: string, params?: SQLParams) {
     const args = toArray(params) ?? [];
@@ -66,7 +66,7 @@ export async function createQuickSQLiteDatabase(options?: DatabaseFactoryOptions
       const tx: Transaction = {
         execute: (sql: string, params?: SQLParams) => runSingle(sql, params),
       };
-      const result = await Promise.resolve(fn(tx));
+      const result = await fn(tx);
       await Promise.resolve(exec('COMMIT'));
       return result;
     } catch (e) {
