@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useColorScheme, Button } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
@@ -10,10 +10,31 @@ import RouteScreen from '@/RouteScreen';
 import StopsScreen from '@/StopsScreen';
 import StopScreen from '@/StopScreen';
 import SettingsScreen from '@/SettingsScreen';
+import {runDbHealthcheck} from "@/db/healthcheck.ts";
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
+  useEffect(() => {
+    if (__DEV__) {
+      (async () => {
+        try {
+          const mod: any = await import('react-native-quick-sqlite');
+          const QuickSQLite: any = mod?.default ?? mod;
+          console.log('[quick-sqlite] keys:', Object.keys(QuickSQLite));
+          console.log('[quick-sqlite] has open:', typeof QuickSQLite.open);
+          console.log('[quick-sqlite] has execute:', typeof QuickSQLite.execute);
+          console.log('[quick-sqlite] has executeSql:', typeof QuickSQLite.executeSql);
+          console.log('[quick-sqlite] has executeAsync:', typeof QuickSQLite.executeAsync);
+          console.log('[quick-sqlite] has executeBatch:', typeof QuickSQLite.executeBatch);
+          console.log('[quick-sqlite] has close:', typeof QuickSQLite.close);
+        } catch (e) {
+          console.warn('[quick-sqlite] probe failed', e);
+        }
+      })();
+      runDbHealthcheck();
+    }
+  }, []);
   // GTFS dynamic lookup removed; providing sample data placeholders for now
   const data = {
     routes: [
