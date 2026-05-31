@@ -1,5 +1,5 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, Button } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import RoutesScreen from '@/RoutesScreen';
 import RouteScreen from '@/RouteScreen';
 import StopsScreen from '@/StopsScreen';
 import StopScreen from '@/StopScreen';
+import SettingsScreen from '@/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,12 @@ function App(): React.JSX.Element {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{title: 'Welcome'}}
+          options={({ navigation }) => ({
+            title: 'Welcome',
+            headerRight: () => (
+              <Button title="Settings" onPress={() => navigation.navigate('Settings')} />
+            ),
+          })}
         />
         <Stack.Screen name="Routes">
           {(props) => <RoutesScreen {...props} routes={data.routes} />}
@@ -42,6 +48,7 @@ function App(): React.JSX.Element {
           {(props) => <StopsScreen {...props} stops={data.stops} />}
         </Stack.Screen>
         <Stack.Screen name="Stop" component={StopScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
