@@ -17,21 +17,6 @@ const Stack = createNativeStackNavigator();
 function App(): React.JSX.Element {
   useEffect(() => {
     if (__DEV__) {
-      (async () => {
-        try {
-          const mod: any = await import('react-native-quick-sqlite');
-          const QuickSQLite: any = mod?.default ?? mod;
-          console.log('[quick-sqlite] keys:', Object.keys(QuickSQLite));
-          console.log('[quick-sqlite] has open:', typeof QuickSQLite.open);
-          console.log('[quick-sqlite] has execute:', typeof QuickSQLite.execute);
-          console.log('[quick-sqlite] has executeSql:', typeof QuickSQLite.executeSql);
-          console.log('[quick-sqlite] has executeAsync:', typeof QuickSQLite.executeAsync);
-          console.log('[quick-sqlite] has executeBatch:', typeof QuickSQLite.executeBatch);
-          console.log('[quick-sqlite] has close:', typeof QuickSQLite.close);
-        } catch (e) {
-          console.warn('[quick-sqlite] probe failed', e);
-        }
-      })();
       runDbHealthcheck();
     }
   }, []);
