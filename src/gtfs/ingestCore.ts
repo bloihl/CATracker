@@ -173,84 +173,78 @@ async function parseAndInsert(
   }
   if (!table) return; // ignore unknown csvs
 
-  const batch: (string | number | null)[][] = [];
-
-  const flush = async () => {
-    if (!batch.length) return;
-    const mapper =
-        table === 'agency' ? mapAgency :
-        table === 'stops' ? mapStops :
-        table === 'routes' ? mapRoutes :
-        table === 'trips' ? mapTrips :
-        table === 'stop_times' ? mapStopTimes :
-        table === 'calendar' ? mapCalendar :
-        table === 'calendar_dates' ? mapCalendarDates :
-        table === 'shapes' ? mapShapes :
-        table === 'fare_attributes' ? mapFareAttributes :
-        table === 'fare_rules' ? mapFareRules :
-        table === 'feed_info' ? mapFeedInfo : null;
-    if (!mapper) {
-      batch.length = 0;
-      return;
-    }
-
-    // Derive columns once from the first row mapping
-    const {cols} = mapper(feedKey, {} as any);
-
-    const isAndroid = Platform.OS === 'android';
-    const BASE_BATCH = isAndroid ? 200 : 600; // conservative on Android
-    const BATCH_SIZE = (filename === 'stop_times.txt') ? (isAndroid ? 120 : 400) : BASE_BATCH;
-
-    onProgress?.({phase: `parse:${table}`, message: `Parsing ${filename}`});
-
-    // 1) Parse once to an array of rows
-    const rows: Record<string, string>[] = await new Promise((resolve, reject) => {
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        fastMode: true,         // safe speedup if data is CSV without crazy quotes
-        complete: (results: any) => resolve((results?.data || []) as Record<string, string>[]),
-        error: (error: any) => reject(error),
-      });
-    });
-
-    let total = 0;
-    const totalRows = rows.length;
-
-    async function pushBatch(chunk: (string | number | null)[][]) {
-      if (!chunk.length) return;
-      await insertBatch(db, table, cols, chunk);
-    }
-
-    function processFrom(start: number, resolve: () => void, reject: (e: any) => void) {
-      try {
-        const end = Math.min(start + BATCH_SIZE, totalRows);
-        const chunk: (string | number | null)[][] = [];
-
-        for (let i = start; i < end; i++) {
-          const {vals} = mapper!(feedKey, rows[i]);
-          chunk.push(vals);
-        }
-        total += (end - start);
-
-        // Flush this chunk, then schedule the next chunk as a macrotask
-        pushBatch(chunk)
-            .then(() => {
-              if (end >= totalRows) {
-                onProgress?.({phase: `insert:${table}`, message: `Inserted ${filename}`, current: total});
-                return resolve();
-              }
-              yieldTick(() => processFrom(end, resolve, reject));
-            })
-            .catch(reject);
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    // Kick off the trampoline and await completion exactly once
-    await new Promise<void>((resolve, reject) => processFrom(0, resolve, reject));
+  const mapper =
+      table === 'agency' ? mapAgency :
+      table === 'stops' ? mapStops :
+      table === 'routes' ? mapRoutes :
+      table === 'trips' ? mapTrips :
+      table === 'stop_times' ? mapStopTimes :
+      table === 'calendar' ? mapCalendar :
+      table === 'calendar_dates' ? mapCalendarDates :
+      table === 'shapes' ? mapShapes :
+      table === 'fare_attributes' ? mapFareAttributes :
+      table === 'fare_rules' ? mapFareRules :
+      table === 'feed_info' ? mapFeedInfo : null;
+  if (!mapper) {
+    return;
   }
+
+  // Derive columns once from the first row mapping
+  const {cols} = mapper(feedKey, {} as any);
+
+  const isAndroid = Platform.OS === 'android';
+  const BASE_BATCH = isAndroid ? 200 : 600; // conservative on Android
+  const BATCH_SIZE = (filename === 'stop_times.txt') ? (isAndroid ? 120 : 400) : BASE_BATCH;
+
+  onProgress?.({phase: `parse:${table}`, message: `Parsing ${filename}`});
+
+  // 1) Parse once to an array of rows
+  const rows: Record<string, string>[] = await new Promise((resolve, reject) => {
+    Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+      fastMode: true,         // safe speedup if data is CSV without crazy quotes
+      complete: (results: any) => resolve((results?.data || []) as Record<string, string>[]),
+      error: (error: any) => reject(error),
+    });
+  });
+
+  let total = 0;
+  const totalRows = rows.length;
+
+  async function pushBatch(chunk: (string | number | null)[][]) {
+    if (!chunk.length) return;
+    await insertBatch(db, table, cols, chunk);
+  }
+
+  function processFrom(start: number, resolve: () => void, reject: (e: any) => void) {
+    try {
+      const end = Math.min(start + BATCH_SIZE, totalRows);
+      const chunk: (string | number | null)[][] = [];
+
+      for (let i = start; i < end; i++) {
+        const {vals} = mapper!(feedKey, rows[i]);
+        chunk.push(vals);
+      }
+      total += (end - start);
+
+      // Flush this chunk, then schedule the next chunk as a macrotask
+      pushBatch(chunk)
+          .then(() => {
+            if (end >= totalRows) {
+              onProgress?.({phase: `insert:${table}`, message: `Inserted ${filename}`, current: total});
+              return resolve();
+            }
+            yieldTick(() => processFrom(end, resolve, reject));
+          })
+          .catch(reject);
+    } catch (e) {
+      reject(e);
+    }
+  }
+
+  // Kick off the trampoline and await completion exactly once
+  await new Promise<void>((resolve, reject) => processFrom(0, resolve, reject));
 }
 
 // Public API: parse provided CSV files and insert into DB in a single transaction per table set
