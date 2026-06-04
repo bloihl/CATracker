@@ -11,12 +11,14 @@
 import type { Database, SQLParams } from '@/db/Database';
 import Papa from 'papaparse';
 import { GTFS_FILES, type CsvFilesMap, type ProgressCallback } from './types';
+import {yieldTick} from "@/gtfs/utils/yieldTicks.ts";
+import {Platform} from "react-native";
 
 // ------------------------------
 // Utilities
 // ------------------------------
 
-const BATCH_SIZE = 800; // safe default for mobile + web
+const BATCH_SIZE = 300; // smaller batches for RN stability
 
 function toNull(s: any) {
   return s === '' || s === undefined ? null : s;
@@ -177,77 +179,91 @@ async function parseAndInsert(
   let table = '' as keyof typeof GTFS_FILES | '';
   for (const k in GTFS_FILES) {
     const key = k as keyof typeof GTFS_FILES;
-    if (GTFS_FILES[key] === filename) { table = key; break; }
+    if (GTFS_FILES[key] === filename) {
+      table = key;
+      break;
+    }
   }
   if (!table) return; // ignore unknown csvs
 
   const batch: (string | number | null)[][] = [];
-  let total = 0;
 
   const flush = async () => {
     if (!batch.length) return;
     const mapper =
-      table === 'agency' ? mapAgency :
-      table === 'stops' ? mapStops :
-      table === 'routes' ? mapRoutes :
-      table === 'trips' ? mapTrips :
-      table === 'stop_times' ? mapStopTimes :
-      table === 'calendar' ? mapCalendar :
-      table === 'calendar_dates' ? mapCalendarDates :
-      table === 'shapes' ? mapShapes :
-      table === 'fare_attributes' ? mapFareAttributes :
-      table === 'fare_rules' ? mapFareRules :
-      table === 'feed_info' ? mapFeedInfo : null;
-    if (!mapper) { batch.length = 0; return; }
+        table === 'agency' ? mapAgency :
+        table === 'stops' ? mapStops :
+        table === 'routes' ? mapRoutes :
+        table === 'trips' ? mapTrips :
+        table === 'stop_times' ? mapStopTimes :
+        table === 'calendar' ? mapCalendar :
+        table === 'calendar_dates' ? mapCalendarDates :
+        table === 'shapes' ? mapShapes :
+        table === 'fare_attributes' ? mapFareAttributes :
+        table === 'fare_rules' ? mapFareRules :
+        table === 'feed_info' ? mapFeedInfo : null;
+    if (!mapper) {
+      batch.length = 0;
+      return;
+    }
 
     // Derive columns once from the first row mapping
-    const { cols } = mapper(feedKey, {} as any);
-    const rows = batch.splice(0, batch.length);
-    await insertBatch(db, table, cols, rows);
-  };
+    const {cols} = mapper(feedKey, {} as any);
 
-  onProgress?.({ phase: `parse:${table}`, message: `Parsing ${filename}` });
+    const isAndroid = Platform.OS === 'android';
+    const BASE_BATCH = isAndroid ? 200 : 600; // conservative on Android
+    const BATCH_SIZE = (filename === 'stop_times.txt') ? (isAndroid ? 120 : 400) : BASE_BATCH;
 
-  await new Promise<void>((resolve, reject) => {
-    Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      step: (results: any) => {
-        const r = results?.data as Record<string, string>;
-        // map → values array (columns discovered lazily on first flush)
-        const mapper =
-          table === 'agency' ? mapAgency :
-          table === 'stops' ? mapStops :
-          table === 'routes' ? mapRoutes :
-          table === 'trips' ? mapTrips :
-          table === 'stop_times' ? mapStopTimes :
-          table === 'calendar' ? mapCalendar :
-          table === 'calendar_dates' ? mapCalendarDates :
-          table === 'shapes' ? mapShapes :
-          table === 'fare_attributes' ? mapFareAttributes :
-          table === 'fare_rules' ? mapFareRules :
-          table === 'feed_info' ? mapFeedInfo : null;
-        if (!mapper) return;
-        const { vals } = mapper(feedKey, r);
-        batch.push(vals);
-        total++;
-        if (batch.length >= BATCH_SIZE) {
-          // Pause parsing, flush, then resume
-          (results as any).parser.pause();
-          flush()
-            .then(() => { (results as any).parser.resume(); })
-            .catch((e) => reject(e));
-        }
-      },
-      complete: async () => {
-        try { await flush(); resolve(); }
-        catch (e) { reject(e); }
-      },
-      error: (error: any) => reject(error),
+    onProgress?.({phase: `parse:${table}`, message: `Parsing ${filename}`});
+
+    // 1) Parse once to an array of rows
+    const rows: Record<string, string>[] = await new Promise((resolve, reject) => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        fastMode: true,         // safe speedup if data is CSV without crazy quotes
+        complete: (results: any) => resolve((results?.data || []) as Record<string, string>[]),
+        error: (error: any) => reject(error),
+      });
     });
-  });
 
-  onProgress?.({ phase: `insert:${table}`, message: `Inserted ${filename}`, current: total });
+    let total = 0;
+    const totalRows = rows.length;
+
+    async function pushBatch(chunk: (string | number | null)[][]) {
+      if (!chunk.length) return;
+      await insertBatch(db, table, cols, chunk);
+    }
+
+    function processFrom(start: number, resolve: () => void, reject: (e: any) => void) {
+      try {
+        const end = Math.min(start + BATCH_SIZE, totalRows);
+        const chunk: (string | number | null)[][] = [];
+
+        for (let i = start; i < end; i++) {
+          const {vals} = mapper(feedKey, rows[i]);
+          chunk.push(vals);
+        }
+        total += (end - start);
+
+        // Flush this chunk, then schedule the next chunk as a macrotask
+        pushBatch(chunk)
+            .then(() => {
+              if (end >= totalRows) {
+                onProgress?.({phase: `insert:${table}`, message: `Inserted ${filename}`, current: total});
+                return resolve();
+              }
+              yieldTick(() => processFrom(end, resolve, reject));
+            })
+            .catch(reject);
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    // Kick off the trampoline and await completion exactly once
+    await new Promise<void>((resolve, reject) => processFrom(0, resolve, reject));
+  }
 }
 
 // Public API: parse provided CSV files and insert into DB in a single transaction per table set
@@ -257,12 +273,15 @@ export async function ingestFromCsvFiles(
   files: CsvFilesMap,
   onProgress?: ProgressCallback,
 ) {
-  await runInTransaction(db, async () => {
-    for (const [_key, path] of Object.entries(GTFS_FILES)) {
-      const filename = path; // e.g., 'routes.txt'
-      const csv = files[filename];
-      if (!csv) continue; // skip missing optional files
-      await parseAndInsert(db, feedKey, filename, csv, onProgress);
-    }
-  });
+  // Note: Avoid starting an outer transaction here because the native adapter's
+  // executeBatch already wraps batched inserts in BEGIN/COMMIT. Nesting would
+  // cause "cannot start a transaction within a transaction" on some engines.
+  for (const [_key, path] of Object.entries(GTFS_FILES)) {
+    const filename = path; // e.g., 'routes.txt'
+    const csv = files[filename];
+    if (!csv) continue; // skip missing optional files
+    await parseAndInsert(db, feedKey, filename, csv, onProgress);
+    // Yield between tables for RN scheduler stability
+    await new Promise(res => (typeof setImmediate === 'function' ? setImmediate(res) : setTimeout(res, 0)));
+  }
 }

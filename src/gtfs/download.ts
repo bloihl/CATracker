@@ -49,7 +49,7 @@ async function downloadAndExtractNative({ feedKey, url, onProgress }: DownloadOp
   const RNFS = await import('react-native-fs');
   const ZipArchive = await import('react-native-zip-archive');
 
-  const baseDir = RNFS.default.DocumentDirectoryPath || RNFS.default.CachesDirectoryPath;
+  const baseDir =  RNFS.default.CachesDirectoryPath;
   const workDir = `${baseDir}/gtfs_${feedKey}`;
   const zipPath = `${workDir}/feed.zip`;
   const extractDir = `${workDir}/unzipped`;
@@ -60,6 +60,11 @@ async function downloadAndExtractNative({ feedKey, url, onProgress }: DownloadOp
 
   onProgress?.({ phase: 'download', message: 'Downloading feed…' });
   await RNFS.default.downloadFile({ fromUrl: url, toFile: zipPath }).promise;
+
+  const st = await RNFS.default.stat(zipPath);
+  if (!st || Number(st.size) < 2048) {
+    throw new Error(`Downloaded zip too small: ${st?.size ?? 0}`);
+  }
 
   onProgress?.({ phase: 'unzip', message: 'Unzipping…' });
   await ZipArchive.unzip(zipPath, extractDir);
