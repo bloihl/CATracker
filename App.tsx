@@ -11,6 +11,8 @@ import StopScreen from '@/StopScreen';
 import SettingsScreen from '@/SettingsScreen';
 import { runDbHealthcheck } from '@/db/healthcheck';
 import { runMigrations } from '@/db/migrations';
+import Bootstrap from '@/Bootstrap';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,29 +46,33 @@ function App(): React.JSX.Element {
   const scheme = useColorScheme();
 
   return (
-    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={({ navigation }) => ({
-            title: 'Welcome',
-            headerRight: () => (
-              <Button title="Settings" onPress={() => navigation.navigate('Settings')} />
-            ),
-          })}
-        />
-        <Stack.Screen name="Routes">
-          {(props) => <RoutesScreen {...props} routes={data.routes} />}
-        </Stack.Screen>
-        <Stack.Screen name="Route" component={RouteScreen} />
-        <Stack.Screen name="Stops">
-          {(props) => <StopsScreen {...props} stops={data.stops} />}
-        </Stack.Screen>
-        <Stack.Screen name="Stop" component={StopScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Bootstrap>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={({ navigation }) => ({
+                title: 'Welcome',
+                headerRight: () => (
+                  <Button title="Settings" onPress={() => navigation.navigate('Settings')} />
+                ),
+              })}
+            />
+            <Stack.Screen name="Routes">
+              {(props) => <RoutesScreen {...props} routes={data.routes} />}
+            </Stack.Screen>
+            <Stack.Screen name="Route" component={RouteScreen} />
+            <Stack.Screen name="Stops">
+              {(props) => <StopsScreen {...props} stops={data.stops} />}
+            </Stack.Screen>
+            <Stack.Screen name="Stop" component={StopScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+          </Stack.Navigator>
+        </Bootstrap>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
