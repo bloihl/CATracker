@@ -18,8 +18,6 @@ import {Platform} from "react-native";
 // Utilities
 // ------------------------------
 
-const BATCH_SIZE = 300; // smaller batches for RN stability
-
 function toNull(s: any) {
   return s === '' || s === undefined ? null : s;
 }
@@ -33,17 +31,6 @@ function pushStatement(
   const placeholders = columns.map(() => '?').join(',');
   const sql = `INSERT INTO ${table} (${columns.join(',')}) VALUES (${placeholders})`;
   out.push({ sql, params: values });
-}
-
-async function runInTransaction(db: Database, fn: () => Promise<void>) {
-  await db.execute('BEGIN');
-  try {
-    await fn();
-    await db.execute('COMMIT');
-  } catch (e) {
-    await db.execute('ROLLBACK');
-    throw e;
-  }
 }
 
 // ------------------------------
@@ -241,7 +228,7 @@ async function parseAndInsert(
         const chunk: (string | number | null)[][] = [];
 
         for (let i = start; i < end; i++) {
-          const {vals} = mapper(feedKey, rows[i]);
+          const {vals} = mapper!(feedKey, rows[i]);
           chunk.push(vals);
         }
         total += (end - start);
