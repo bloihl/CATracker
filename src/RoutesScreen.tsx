@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {useColorScheme, Text, View} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
+import {openDatabase} from "@/db/Database.ts";
 
 // For now, using 'any' for flexibility, but should be replaced with actual type
 interface RouteItem {
@@ -17,10 +18,40 @@ interface RoutesScreenProps {
   routes: RouteItem[];
 }
 
-function RoutesScreen({navigation, routes}: RoutesScreenProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+async function getRouteItems():Promise<RouteItem[]>{
+    const db = await openDatabase({ name: 'app.db' });
+    const routes = await db.execute("SELECT route_id, route_short_name, route_long_name FROM routes");
+    const routeItems: RouteItem[] = []
+    routes.rows.forEach(row => {
+        console.log(row);
+        console.log(row.route_id);
+        console.log(row.route_short_name);
+        console.log(row.route_long_name);
+        const routeItem: RouteItem = {
+            route_short_name: row.route_short_name,
+            route_long_name: row.route_long_name,
+            route_id: row.route_id,
+        }
+        routeItems.push(routeItem);
+    });
+    await db.close();
 
-  if (!routes || routes.length === 0) {
+    return routeItems;
+}
+const DEFAULT_ROUTE_ITEM: RouteItem = { route_id: '0', route_short_name: 'White', route_long_name: 'White Line' };
+
+function RoutesScreen({navigation}: any): React.JSX.Element {
+  const isDarkMode = useColorScheme() === 'dark';
+  const [routeData, setRouteData] = useState([DEFAULT_ROUTE_ITEM]);
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await getRouteItems();
+      setRouteData(data);
+    }
+    loadData();
+  },[])
+
+  if (!routeData || routeData.length === 0) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text>No routes data available.</Text>
@@ -31,7 +62,7 @@ function RoutesScreen({navigation, routes}: RoutesScreenProps): React.JSX.Elemen
   return (
     <CatScreen
       isDarkMode={isDarkMode}
-      data={routes}
+      data={routeData}
       renderDataItem={({item}: {item: RouteItem}) => {
         const title = item.route_short_name || item.route_long_name || `Route ID: ${item.route_id}`;
         return (

@@ -9,7 +9,6 @@ import RouteScreen from '@/RouteScreen';
 import StopsScreen from '@/StopsScreen';
 import StopScreen from '@/StopScreen';
 import SettingsScreen from '@/SettingsScreen';
-import { runDbHealthcheck } from '@/db/healthcheck';
 import { runMigrations } from '@/db/migrations';
 import Bootstrap from '@/Bootstrap';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -22,22 +21,13 @@ function App(): React.JSX.Element {
     (async () => {
       try {
         await runMigrations();
-        if (__DEV__) {
-          await runDbHealthcheck();
-        }
       } catch (e) {
-        if (__DEV__) {
-          console.warn('[db] migrations error:', e);
-        }
+        console.warn('[db] migrations error:', e);
       }
     })();
   }, []);
   // GTFS dynamic lookup removed; providing sample data placeholders for now
   const data = {
-    routes: [
-      { route_id: '1', route_short_name: 'Blue', route_long_name: 'Blue Line' },
-      { route_id: '2', route_short_name: 'Green', route_long_name: 'Green Line' },
-    ],
     stops: [
       { stop_id: '100', stop_name: 'Main & 1st', stop_code: 'M1' },
       { stop_id: '200', stop_name: 'Central Station', stop_code: 'CEN' },
@@ -60,9 +50,7 @@ function App(): React.JSX.Element {
                 ),
               })}
             />
-            <Stack.Screen name="Routes">
-              {(props) => <RoutesScreen {...props} routes={data.routes} />}
-            </Stack.Screen>
+            <Stack.Screen name="Routes" component={RoutesScreen}/>
             <Stack.Screen name="Route" component={RouteScreen} />
             <Stack.Screen name="Stops">
               {(props) => <StopsScreen {...props} stops={data.stops} />}

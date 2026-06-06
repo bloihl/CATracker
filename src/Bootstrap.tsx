@@ -53,6 +53,7 @@ export default function Bootstrap({ children }: BootstrapProps): React.JSX.Eleme
     }, []);
 
     if (ready) {
+        console.log('Bootstrap complete');
         return <>{children}</>;
     }
 

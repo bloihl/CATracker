@@ -184,15 +184,19 @@ export async function runMigrations(): Promise<void> {
     'CREATE INDEX IF NOT EXISTS idx_route_stops_stop ON route_stops(feed_key, stop_id)',
   ];
   indexes.forEach(sql => statements.push({ sql }));
-
-  // Execute in a transaction
-  await db.withTransaction((tx) => {
-    // Native adapter requires sync callback; we just enqueue promises via tx.execute
-    for (const s of statements) {
-      // We ignore result rows for DDL
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      tx.execute(s.sql);
-    }
-    return;
-  });
+  try {
+    // Execute in a transaction
+    await db.withTransaction((tx) => {
+      // Native adapter requires sync callback; we just enqueue promises via tx.execute
+      for (const s of statements) {
+        // We ignore result rows for DDL
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        tx.execute(s.sql);
+      }
+      return;
+    });
+    console.log('[db] Migrations completed');
+  }catch (e) {
+    console.error('[db] Migration failed:', e);
+  }
 }
