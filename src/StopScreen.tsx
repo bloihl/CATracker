@@ -5,45 +5,62 @@ import {Text, useColorScheme} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
+import { getArrivalDate } from '@/gtfs/utils/time';
 
 const DEFAULT_ROUTES: {routeId: string, routeName: string, routeTimes: string[]}[] = [{routeId: '0', routeName: 'Route 0', routeTimes: ['']}];
-
-function getArrivalDate(arrivalTime: any) {
-    const date = new Date();
-    date.setHours(arrivalTime.split(':')[0], arrivalTime.split(':')[1], arrivalTime.split(':')[2]);
-    return date;
-}
 
 async function getRoutes(stopId: string) {
     const db = await openDatabase({ name: 'app.db' });
     const routeItems: { routeId: string, routeName: string, routeTimes: string[] }[] = [];
-    const routes = await db.execute(`SELECT rs.route_id, routes.route_long_name FROM route_stops rs JOIN routes ON rs.route_id = routes.route_id WHERE stop_id = ${stopId}`);
+    // Combined query to get routes and their arrival times for this stop
+    const sql = `
+        SELECT
+            r.route_id,
+            r.route_long_name,
+            st.arrival_time
+        FROM routes r
+        JOIN trips t ON r.route_id = t.route_id
+        JOIN stop_times st ON t.trip_id = st.trip_id
+        WHERE st.stop_id = ?
+        ORDER BY r.route_id, st.arrival_time ASC
+    `;
+    const res = await db.execute(sql, [stopId]);
+
     const now = new Date();
-    for( const row of routes.rows){
-        const db2 = await openDatabase({ name: 'app.db' });
-        const now = new Date();
-        const times = await db2.execute(`SELECT st.arrival_time FROM trips t JOIN stop_times st ON t.trip_id = st.trip_id WHERE t.route_id = ${row.route_id} AND st.stop_id = ${stopId} ORDER BY st.arrival_time ASC`);
+    const groupedByRoute: Record<string, {name: string, times: string[]}> = {};
+
+    res.rows.forEach(row => {
+        if (!groupedByRoute[row.route_id]) {
+            groupedByRoute[row.route_id] = { name: row.route_long_name, times: [] };
+        }
+        groupedByRoute[row.route_id].times.push(row.arrival_time);
+    });
+
+    for (const routeId in groupedByRoute) {
+        const { name, times } = groupedByRoute[routeId];
         const routeTimes: string[] = [];
-        times.rows.forEach(timeRow => {
-            const arrivalTime = timeRow.arrival_time;
+
+        for (const arrivalTime of times) {
             const date = getArrivalDate(arrivalTime);
-            if(date > now) {
+            if (date > now) {
                 routeTimes.push(date.toLocaleTimeString());
             }
-        })
-        if (routeTimes.length === 0) { //next trip is tomorrow
-            const earliestArrivalTime = times.rows[0].arrival_time;
+        }
+
+        if (routeTimes.length === 0 && times.length > 0) { //next trip is tomorrow
+            const earliestArrivalTime = times[0];
             const earliestArrivalTimeTomorrow = getArrivalDate(earliestArrivalTime);
             earliestArrivalTimeTomorrow.setDate(earliestArrivalTimeTomorrow.getDate() + 1);
             routeTimes.push(earliestArrivalTimeTomorrow.toLocaleString());
         }
-        const routeItem: { routeId: string, routeName: string, routeTimes: string[] } = {
-            routeId: row.route_id,
-            routeName: row.route_long_name,
-            routeTimes,
-        };
-        routeItems.push(routeItem);
+
+        routeItems.push({
+            routeId,
+            routeName: name,
+            routeTimes
+        });
     }
+
     return routeItems;
 }
 
