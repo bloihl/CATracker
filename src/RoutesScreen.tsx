@@ -60,12 +60,12 @@ function RoutesScreen({navigation}: any): React.JSX.Element {
       isDarkMode={isDarkMode}
       data={routeData}
       renderDataItem={({item}: {item: RouteItem}) => {
-        const title = item.route_short_name || item.route_long_name || `Route ID: ${item.route_id}`;
+        const title = item.route_long_name || item.route_short_name || `Route ID: ${item.route_id}`;
         return (
           <Section
             title={title}
             onPressHandler={() =>
-              navigation.navigate('Route', {busRouteId: `${item.route_id}`})
+              navigation.navigate('Route', {routeId: `${item.route_id}`, routeName: `${item.route_long_name}`})
             }
             isDarkMode={isDarkMode}
           />
