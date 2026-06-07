@@ -53,8 +53,8 @@ function RouteScreen({navigation, route}: { navigation: any; route: any }): Reac
           />
         );
       }}>
-      <Text>Route Id: {routeId}</Text>
       <Text>Route Name: {routeName}</Text>
+      <Text>Route Id: {routeId}</Text>
     </CatScreen>
   );
 }
