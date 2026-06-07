@@ -125,6 +125,5 @@ export async function hasAnyData(feedKey: string): Promise<boolean> {
   const db = await openDatabase({ name: 'app.db' });
   // Fast existence probe against routes (could use feed_meta too)
   const res = await db.execute('SELECT 1 AS x FROM routes WHERE feed_key = ? LIMIT 1', [feedKey]);
-  await db.close();
   return Array.isArray(res.rows) && res.rows.length > 0;
 }
