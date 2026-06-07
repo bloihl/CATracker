@@ -8,21 +8,19 @@ import CatScreen from '@/CatScreen';
 
 const DEFAULT_ROUTES: {routeId: string, routeName: string, routeTimes: string[]}[] = [{routeId: '0', routeName: 'Route 0', routeTimes: ['']}];
 
-async function getRoutes(db: Database, stopId: string) {
+async function getRoutes(stopId: string) {
+    const db = await openDatabase({ name: 'app.db' });
     const routeItems: { routeId: string, routeName: string, routeTimes: string[] }[] = [];
     const routes = await db.execute(`SELECT rs.route_id, routes.route_long_name FROM route_stops rs JOIN routes ON rs.route_id = routes.route_id WHERE stop_id = ${stopId}`);
     for( const row of routes.rows){
+        const db2 = await openDatabase({ name: 'app.db' });
         const now = new Date();
-        const times = await db.execute(`SELECT st.arrival_time FROM trips t JOIN stop_times st ON t.trip_id = st.trip_id WHERE t.route_id = ${row.route_id} AND st.stop_id = ${stopId} ORDER BY st.arrival_time ASC`);
+        const times = await db2.execute(`SELECT st.arrival_time FROM trips t JOIN stop_times st ON t.trip_id = st.trip_id WHERE t.route_id = ${row.route_id} AND st.stop_id = ${stopId} ORDER BY st.arrival_time ASC`);
         const routeTimes: string[] = [];
         times.rows.forEach(timeRow => {
             const date = new Date();
             date.setHours(timeRow.arrival_time.split(':')[0], timeRow.arrival_time.split(':')[1], timeRow.arrival_time.split(':')[2]);
-            console.log(`db value: ${timeRow.arrival_time}`);
-            console.log(`date value: ${date.toString()}`);
-            console.log(`now value: ${now.toString()}`);
             if(date > now) {
-                console.log(`adding time: ${timeRow.arrival_time}`);
                 routeTimes.push(timeRow.arrival_time);
             }
         })
@@ -48,10 +46,9 @@ function StopScreen({navigation, route}: { navigation: any; route: any }): React
 
   useEffect(() => {
       const loadData = async () => {
-          const db = await openDatabase({ name: 'app.db' });
-          return await getRoutes(db, stopId);
+          setRoutes( await getRoutes(stopId));
       }
-      loadData().then(data => setRoutes(data));
+      loadData();
   },[]);
   return (
     <CatScreen
