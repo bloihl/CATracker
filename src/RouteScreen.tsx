@@ -3,7 +3,7 @@ import {Text, useColorScheme} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
-import {Database, openDatabase} from "@/db/Database.ts";
+import {Database, openDatabase} from "@/db/Database";
 
 interface StopItem {stopId: string, stopName: string};
 
@@ -47,7 +47,7 @@ function RouteScreen({navigation, route}: { navigation: any; route: any }): Reac
           <Section
             title={titleString}
             onPressHandler={() =>
-              navigation.navigate('Stop', {stopId: `${item.stopId}`})
+              navigation.navigate('Stop', {stopId: `${item.stopId}`, stopName: `${item.stopName}`})
             }
             isDarkMode={isDarkMode}
           />

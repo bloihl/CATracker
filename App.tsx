@@ -26,13 +26,7 @@ function App(): React.JSX.Element {
       }
     })();
   }, []);
-  // GTFS dynamic lookup removed; providing sample data placeholders for now
-  const data = {
-    stops: [
-      { stop_id: '100', stop_name: 'Main & 1st', stop_code: 'M1' },
-      { stop_id: '200', stop_name: 'Central Station', stop_code: 'CEN' },
-    ],
-  };
+
   const scheme = useColorScheme();
 
   return (
@@ -52,9 +46,7 @@ function App(): React.JSX.Element {
             />
             <Stack.Screen name="Routes" component={RoutesScreen}/>
             <Stack.Screen name="Route" component={RouteScreen} />
-            <Stack.Screen name="Stops">
-              {(props) => <StopsScreen {...props} stops={data.stops} />}
-            </Stack.Screen>
+            <Stack.Screen name="Stops" component={StopsScreen}/>
             <Stack.Screen name="Stop" component={StopScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>

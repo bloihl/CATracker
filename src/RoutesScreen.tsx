@@ -3,7 +3,7 @@ import {useColorScheme, Text, View} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
-import {openDatabase} from "@/db/Database.ts";
+import {openDatabase} from "@/db/Database";
 
 // For now, using 'any' for flexibility, but should be replaced with actual type
 interface RouteItem {
