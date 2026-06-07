@@ -23,10 +23,6 @@ async function getRouteItems():Promise<RouteItem[]>{
     const routes = await db.execute("SELECT route_id, route_short_name, route_long_name FROM routes");
     const routeItems: RouteItem[] = []
     routes.rows.forEach(row => {
-        console.log(row);
-        console.log(row.route_id);
-        console.log(row.route_short_name);
-        console.log(row.route_long_name);
         const routeItem: RouteItem = {
             route_short_name: row.route_short_name,
             route_long_name: row.route_long_name,
