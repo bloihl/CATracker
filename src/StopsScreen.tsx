@@ -25,8 +25,6 @@ async function getStopItems():Promise<StopItem[]>{
         }
         stopItems.push(stopItem);
     });
-    await db.close();
-
     return stopItems;
 }
 
@@ -41,7 +39,7 @@ function StopsScreen({navigation}: any): React.JSX.Element {
           setStops(data);
       }
       loadData();
-  })
+  }, []);
 
   if (!stops || stops.length === 0) {
     return (
