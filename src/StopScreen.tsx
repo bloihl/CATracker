@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Database, openDatabase} from '@/db/Database';
+import {openDatabase} from '@/db/Database';
 
 import {Text, useColorScheme} from 'react-native';
 

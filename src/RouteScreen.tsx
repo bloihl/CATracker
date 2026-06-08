@@ -3,9 +3,9 @@ import {Text, useColorScheme} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
-import {Database, openDatabase} from "@/db/Database";
+import {openDatabase} from "@/db/Database";
 
-interface StopItem {stopId: string, stopName: string};
+interface StopItem {stopId: string, stopName: string}
 
 const DEFAULT_STOPS: StopItem[] = [{stopId: '0', stopName: 'Stop 0'}];
 
