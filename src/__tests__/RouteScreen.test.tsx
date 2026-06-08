@@ -19,10 +19,18 @@ jest.mock('@/gtfs/utils/time', () => ({
 
 describe('RouteScreen', () => {
   it('loads and renders stops for a route with next arrival time', async () => {
-    const mockExecute = jest.fn().mockResolvedValue({
-      rows: [
-        { stop_id: 'S1', stop_name: 'Test Stop 1', arrival_time: '12:00:00' },
-      ],
+    jest.useFakeTimers();
+    const mockExecute = jest.fn().mockImplementation((sql: string) => {
+      if (sql.includes('feed_meta')) {
+        return Promise.resolve({
+          rows: [{ freshnessDate: '2023-01-01' }],
+        });
+      }
+      return Promise.resolve({
+        rows: [
+          { stop_id: 'S1', stop_name: 'Test Stop 1', arrival_time: '12:00:00' },
+        ],
+      });
     });
 
     (openDatabase as jest.Mock).mockResolvedValue({
@@ -43,6 +51,7 @@ describe('RouteScreen', () => {
             <RouteScreen navigation={{}} route={routeProp} />
         </NavigationContainer>
       );
+      jest.runAllTimers();
     });
 
     const root = renderer!.root;
