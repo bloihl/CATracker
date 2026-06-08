@@ -8,11 +8,20 @@ jest.mock('@/db/Database', () => ({
   openDatabase: jest.fn(),
 }));
 
+// Mock getArrivalDate to return a fixed date in the future for tests
+jest.mock('@/gtfs/utils/time', () => ({
+  getArrivalDate: jest.fn((time) => {
+      const d = new Date();
+      d.setHours(23, 59, 59); // future
+      return d;
+  }),
+}));
+
 describe('RouteScreen', () => {
-  it('loads and renders stops for a route', async () => {
+  it('loads and renders stops for a route with next arrival time', async () => {
     const mockExecute = jest.fn().mockResolvedValue({
       rows: [
-        { stop_id: 'S1', stop_name: 'Test Stop 1' },
+        { stop_id: 'S1', stop_name: 'Test Stop 1', arrival_time: '12:00:00' },
       ],
     });
 
@@ -37,6 +46,9 @@ describe('RouteScreen', () => {
     });
 
     const root = renderer!.root;
-    expect(root.findAllByProps({ title: 'Test Stop 1' }).length).toBeGreaterThanOrEqual(1);
+    // Check if the stop name and arrival time are rendered in the title
+    const sections = root.findAllByProps({ isDarkMode: false }); // Section props
+    const found = sections.some(s => s.props.title && s.props.title.includes('Test Stop 1') && s.props.title.includes('Next Arrival Time:'));
+    expect(found).toBe(true);
   });
 });
