@@ -30,7 +30,6 @@ async function getRouteItems():Promise<RouteItem[]>{
         }
         routeItems.push(routeItem);
     });
-    await db.close();
 
     return routeItems;
 }
