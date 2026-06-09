@@ -36,7 +36,7 @@ describe('StopsScreen', () => {
             <StopsScreen navigation={{}} />
         </NavigationContainer>
       );
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
     });
 
     const root = renderer!.root;
