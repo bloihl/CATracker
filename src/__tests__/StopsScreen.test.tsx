@@ -10,11 +10,19 @@ jest.mock('@/db/Database', () => ({
 
 describe('StopsScreen', () => {
   it('loads and renders stops', async () => {
-    const mockExecute = jest.fn().mockResolvedValue({
-      rows: [
-        { stop_id: 'S1', stop_name: 'Test Stop 1', stop_code: '101' },
-        { stop_id: 'S2', stop_name: 'Test Stop 2', stop_code: '102' },
-      ],
+    jest.useFakeTimers();
+    const mockExecute = jest.fn().mockImplementation((sql: string) => {
+      if (sql.includes('feed_meta')) {
+        return Promise.resolve({
+          rows: [{ freshnessDate: '2023-01-01' }],
+        });
+      }
+      return Promise.resolve({
+        rows: [
+          { stop_id: 'S1', stop_name: 'Test Stop 1', stop_code: '101' },
+          { stop_id: 'S2', stop_name: 'Test Stop 2', stop_code: '102' },
+        ],
+      });
     });
 
     (openDatabase as jest.Mock).mockResolvedValue({
@@ -28,6 +36,7 @@ describe('StopsScreen', () => {
             <StopsScreen navigation={{}} />
         </NavigationContainer>
       );
+      jest.runAllTimers();
     });
 
     const root = renderer!.root;
