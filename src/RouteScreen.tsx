@@ -16,8 +16,8 @@ async function loadStops(busRouteId: string) {
     const sql  = `
         SELECT s.stop_id, s.stop_name, st.arrival_time 
         FROM trips t 
-            JOIN stop_times st ON t.trip_id = st.trip_id
-            JOIN stops s   ON st.stop_id = s.stop_id
+            LEFT JOIN stop_times st ON t.trip_id = st.trip_id
+            LEFT JOIN stops s ON st.stop_id = s.stop_id
         WHERE t.route_id = ?
         ORDER BY s.stop_id, st.arrival_time ASC
     `;
