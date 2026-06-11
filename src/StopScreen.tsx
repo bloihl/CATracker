@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {openDatabase} from '@/db/Database';
 
-import {Text, useColorScheme} from 'react-native';
+import {Text, useColorScheme, View} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
 import { getArrivalDate } from '@/gtfs/utils/time';
+import styles from '@/AppStyle';
 
 const DEFAULT_ROUTES: {routeId: string, routeName: string, routeTimes: string[]}[] = [{routeId: '0', routeName: 'Route 0', routeTimes: ['']}];
 
@@ -69,6 +70,8 @@ function StopScreen({navigation, route}: { navigation: any; route: any }): React
   const {stopId, stopName} = route.params;
   const [routes, setRoutes] = useState(DEFAULT_ROUTES);
 
+  const textStyle = isDarkMode ? styles.sectionDescriptionDark : styles.sectionDescriptionLight;
+
   useEffect(() => {
       const loadData = async () => {
           setRoutes( await getRoutes(stopId));
@@ -80,13 +83,16 @@ function StopScreen({navigation, route}: { navigation: any; route: any }): React
       isDarkMode={isDarkMode}
       data={routes}
       renderDataItem={({item}) => {
-        const titleString = `${item.routeName} \nNext Arrival Time: ${item.routeTimes[0]}`;
         return (
           <Section
-            title={titleString}
+            title={item.routeName}
             onPressHandler={() => {navigation.navigate('Route', {routeId: `${ item.routeId }`, routeName: `${ item.routeName }`}) }}
             isDarkMode={isDarkMode}
-          />
+          >
+              <View style={styles.sectionDescription}>
+                  <Text style={textStyle}>Next Arrival Time: {item.routeTimes[0]}</Text>
+              </View>
+          </Section>
         );
       }}>
       <Text>{stopName}</Text>

@@ -21,6 +21,7 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): R
         onPress={onPressHandler}
         title={title}
       />
+      {children}
     </View>
   );
 }
