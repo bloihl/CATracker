@@ -52,7 +52,7 @@ async function getRoutes(stopId: string) {
             const earliestArrivalTime = times[0];
             const earliestArrivalTimeTomorrow = getArrivalDate(earliestArrivalTime);
             earliestArrivalTimeTomorrow.setDate(earliestArrivalTimeTomorrow.getDate() + 1);
-            routeTimes.push(earliestArrivalTimeTomorrow.toLocaleString());
+            routeTimes.push(earliestArrivalTimeTomorrow.toLocaleTimeString());
         }
 
         routeItems.push({
@@ -77,7 +77,7 @@ function StopScreen({navigation, route}: { navigation: any; route: any }): React
           setRoutes( await getRoutes(stopId));
       }
       loadData();
-  },[]);
+  },[stopId]);
   return (
     <CatScreen
       isDarkMode={isDarkMode}

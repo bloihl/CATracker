@@ -78,7 +78,7 @@ async function loadStops(busRouteId: string) {
             const date = getArrivalDate(entry.arrivalTime);
             date.setDate(date.getDate() + 1);
             nextTripId = entry.tripId;
-            nextArrivalTime = date.toLocaleString();
+            nextArrivalTime = date.toLocaleTimeString();
         }
 
         stopItems.push({
@@ -120,8 +120,8 @@ function RouteScreen({navigation, route}: { navigation: any; route: any }): Reac
             isDarkMode={isDarkMode}
           >
               <View style={styles.sectionDescription}>
-                  <Text style={textStyle}>Next Arrival: {item.nextArrivalTime}</Text>
                   <Text style={textStyle}>Trip ID: {item.nextTripId}</Text>
+                  <Text style={textStyle}>Next Arrival: {item.nextArrivalTime}</Text>
               </View>
           </Section>
         );
