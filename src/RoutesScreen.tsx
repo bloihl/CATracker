@@ -12,12 +12,6 @@ interface RouteItem {
   route_id: string;
   // Add other relevant route properties here
 }
-
-interface RoutesScreenProps {
-  navigation: any;
-  routes: RouteItem[];
-}
-
 async function getRouteItems():Promise<RouteItem[]>{
     const db = await openDatabase({ name: 'app.db' });
     const routes = await db.execute("SELECT route_id, route_short_name, route_long_name FROM routes");
@@ -30,7 +24,6 @@ async function getRouteItems():Promise<RouteItem[]>{
         }
         routeItems.push(routeItem);
     });
-    await db.close();
 
     return routeItems;
 }
