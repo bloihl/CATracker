@@ -1,58 +1,91 @@
 import React, {useEffect, useState} from 'react';
-import {Text, useColorScheme} from 'react-native';
+import {Text, useColorScheme, View} from 'react-native';
 
 import Section from '@/Section';
 import CatScreen from '@/CatScreen';
 import {openDatabase} from "@/db/Database";
 import {getArrivalDate} from "@/gtfs/utils/time.ts";
+import styles from '@/AppStyle';
 
-interface StopItem {stopId: string, stopName: string, stopTimes: string[]}
+interface StopItem {
+    stopId: string;
+    stopName: string;
+    nextTripId: string;
+    nextArrivalTime: string;
+}
 
-const DEFAULT_STOPS: StopItem[] = [{stopId: '0', stopName: 'Stop 0', stopTimes: ['08:00:00']}];
+const DEFAULT_STOPS: StopItem[] = [{
+    stopId: '0',
+    stopName: 'Stop 0',
+    nextTripId: 'N/A',
+    nextArrivalTime: '08:00:00'
+}];
 
 async function loadStops(busRouteId: string) {
     const db = await openDatabase({ name: 'app.db' });
-    const stopItems: StopItem[] = [];
     const sql  = `
-        SELECT s.stop_id, s.stop_name, st.arrival_time 
+        SELECT s.stop_id, s.stop_name, st.arrival_time, st.trip_id, st.stop_sequence
         FROM trips t 
-            LEFT JOIN stop_times st ON t.trip_id = st.trip_id
-            LEFT JOIN stops s ON st.stop_id = s.stop_id
+            JOIN stop_times st ON t.trip_id = st.trip_id
+            JOIN stops s ON st.stop_id = s.stop_id
         WHERE t.route_id = ?
-        ORDER BY s.stop_id, st.arrival_time ASC
+        ORDER BY st.stop_sequence, st.arrival_time ASC
     `;
-    const stops = await db.execute(sql, [busRouteId]);
-    const groupedByStop: Record<string, {name: string, times: string[]}> = {};
-    stops.rows.forEach(row => {
-        if (!groupedByStop[row.stop_id]) {
-            groupedByStop[row.stop_id] = { name: row.stop_name, times: [] };
-        }
-        groupedByStop[row.stop_id].times.push(row.arrival_time);
-    });
+    const res = await db.execute(sql, [busRouteId]);
 
     const now = new Date();
-    for (const stopId in groupedByStop) {
-        const { name, times } = groupedByStop[stopId];
-        const stopTimes: string[] = [];
+    const groupedByStop: Record<string, {
+        name: string,
+        sequence: number,
+        entries: {tripId: string, arrivalTime: string}[]
+    }> = {};
 
-        for (const arrivalTime of times) {
-            const date = getArrivalDate(arrivalTime);
+    res.rows.forEach(row => {
+        if (!groupedByStop[row.stop_id]) {
+            groupedByStop[row.stop_id] = {
+                name: row.stop_name,
+                sequence: row.stop_sequence,
+                entries: []
+            };
+        }
+        groupedByStop[row.stop_id].entries.push({
+            tripId: row.trip_id,
+            arrivalTime: row.arrival_time
+        });
+    });
+
+    const stopItems: StopItem[] = [];
+
+    // Sort unique stops by their sequence
+    const sortedStopIds = Object.keys(groupedByStop).sort((a, b) => groupedByStop[a].sequence - groupedByStop[b].sequence);
+
+    for (const stopId of sortedStopIds) {
+        const { name, entries } = groupedByStop[stopId];
+        let nextTripId = '';
+        let nextArrivalTime = '';
+
+        for (const entry of entries) {
+            const date = getArrivalDate(entry.arrivalTime);
             if (date > now) {
-                stopTimes.push(date.toLocaleTimeString());
+                nextTripId = entry.tripId;
+                nextArrivalTime = date.toLocaleTimeString();
+                break;
             }
         }
 
-        if (stopTimes.length === 0 && times.length > 0) { //next trip is tomorrow
-            const earliestArrivalTime = times[0];
-            const earliestArrivalTimeTomorrow = getArrivalDate(earliestArrivalTime);
-            earliestArrivalTimeTomorrow.setDate(earliestArrivalTimeTomorrow.getDate() + 1);
-            stopTimes.push(earliestArrivalTimeTomorrow.toLocaleString());
+        if (!nextArrivalTime && entries.length > 0) { // next trip is tomorrow
+            const entry = entries[0];
+            const date = getArrivalDate(entry.arrivalTime);
+            date.setDate(date.getDate() + 1);
+            nextTripId = entry.tripId;
+            nextArrivalTime = date.toLocaleTimeString();
         }
 
         stopItems.push({
             stopId,
             stopName: name,
-            stopTimes
+            nextTripId,
+            nextArrivalTime
         });
     }
     return stopItems;
@@ -63,27 +96,34 @@ function RouteScreen({navigation, route}: { navigation: any; route: any }): Reac
   const [stops, setStops] = useState(DEFAULT_STOPS);
   const {routeId} = route.params;
   const {routeName} = route.params;
+
+  const textStyle = isDarkMode ? styles.sectionDescriptionDark : styles.sectionDescriptionLight;
+
   useEffect(() => {
       const loadData = async () => {
           setStops(await loadStops(routeId));
       }
       loadData();
-  }, []);
+  }, [routeId]);
 
   return (
     <CatScreen
       isDarkMode={isDarkMode}
       data= {stops}
       renderDataItem={({item}) => {
-        const titleString = `${item.stopName}\nNext Arrival Time: ${item.stopTimes[0]}`;
         return (
           <Section
-            title={titleString}
+            title={item.stopName}
             onPressHandler={() =>
               navigation.navigate('Stop', {stopId: `${item.stopId}`, stopName: `${item.stopName}`})
             }
             isDarkMode={isDarkMode}
-          />
+          >
+              <View style={styles.sectionDescription}>
+                  <Text style={textStyle}>Trip ID: {item.nextTripId}</Text>
+                  <Text style={textStyle}>Next Arrival: {item.nextArrivalTime}</Text>
+              </View>
+          </Section>
         );
       }}>
       <Text>Route Name: {routeName}</Text>

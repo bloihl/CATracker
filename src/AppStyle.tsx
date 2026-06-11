@@ -15,6 +15,12 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     alignItems: 'center',
   },
+  sectionDescriptionLight: {
+    color: 'black',
+  },
+  sectionDescriptionDark: {
+    color: 'white',
+  },
   highlight: {
     fontWeight: '700',
   },

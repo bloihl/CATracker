@@ -11,7 +11,7 @@ type SectionProps = PropsWithChildren<{
   isDarkMode: boolean;
 }>;
 
-function Section({children, title, onPressHandler, isDarkMode}: SectionProps): React.JSX.Element {
+function Section({children, title, onPressHandler, isDarkMode: _isDarkMode}: SectionProps): React.JSX.Element {
   const { colors } = useTheme();
   return (
     <View style={styles.sectionContainer}>
@@ -21,6 +21,7 @@ function Section({children, title, onPressHandler, isDarkMode}: SectionProps): R
         onPress={onPressHandler}
         title={title}
       />
+      {children}
     </View>
   );
 }
