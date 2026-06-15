@@ -10,7 +10,7 @@ jest.mock('@/db/Database', () => ({
 
 // Mock getArrivalDate to return a fixed date in the future for tests
 jest.mock('@/gtfs/utils/time', () => ({
-  getArrivalDate: jest.fn((time) => {
+  getArrivalDate: jest.fn((_time) => {
       const d = new Date();
       d.setHours(23, 59, 59); // future
       return d;
@@ -55,9 +55,14 @@ describe('RouteScreen', () => {
     });
 
     const root = renderer!.root;
-    // Check if the stop name and arrival time are rendered in the title
+    // Check if the stop name and arrival time are rendered
     const sections = root.findAllByProps({ isDarkMode: false }); // Section props
-    const found = sections.some(s => s.props.title && s.props.title.includes('Test Stop 1') && s.props.title.includes('Next Arrival Time:'));
-    expect(found).toBe(true);
+    const stopSection = sections.find(s => s.props.title === 'Test Stop 1');
+    expect(stopSection).toBeDefined();
+
+    const arrivalText = root.findAllByType(require('react-native').Text).some(t =>
+      t.props.children && t.props.children.toString().includes('Next Arrival:')
+    );
+    expect(arrivalText).toBe(true);
   });
 });

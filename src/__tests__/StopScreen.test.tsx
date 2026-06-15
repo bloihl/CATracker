@@ -10,7 +10,7 @@ jest.mock('@/db/Database', () => ({
 
 // Mock getArrivalDate to return a fixed date in the future for tests
 jest.mock('@/gtfs/utils/time', () => ({
-  getArrivalDate: jest.fn((time) => {
+  getArrivalDate: jest.fn((_time) => {
       const d = new Date();
       d.setHours(23, 59, 59); // future
       return d;
