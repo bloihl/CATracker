@@ -10,7 +10,7 @@ jest.mock('@/db/Database', () => ({
 
 // Mock getArrivalDate to return a fixed date in the future for tests
 jest.mock('@/gtfs/utils/time', () => ({
-  getArrivalDate: jest.fn((time) => {
+  getArrivalDate: jest.fn((_time) => {
       const d = new Date();
       d.setHours(23, 59, 59); // future
       return d;
@@ -19,10 +19,18 @@ jest.mock('@/gtfs/utils/time', () => ({
 
 describe('StopScreen', () => {
   it('loads and renders routes for a stop', async () => {
-    const mockExecute = jest.fn().mockResolvedValue({
-      rows: [
-        { route_id: 'R1', route_long_name: 'Route 1', arrival_time: '12:00:00' },
-      ],
+    jest.useFakeTimers();
+    const mockExecute = jest.fn().mockImplementation((sql: string) => {
+      if (sql.includes('feed_meta')) {
+        return Promise.resolve({
+          rows: [{ freshnessDate: '2023-01-01' }],
+        });
+      }
+      return Promise.resolve({
+        rows: [
+          { route_id: 'R1', route_long_name: 'Route 1', arrival_time: '12:00:00' },
+        ],
+      });
     });
 
     (openDatabase as jest.Mock).mockResolvedValue({
@@ -43,6 +51,7 @@ describe('StopScreen', () => {
             <StopScreen navigation={{}} route={routeProp} />
         </NavigationContainer>
       );
+      jest.runOnlyPendingTimers();
     });
 
     const root = renderer!.root;

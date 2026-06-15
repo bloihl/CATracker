@@ -10,10 +10,18 @@ jest.mock('@/db/Database', () => ({
 
 describe('RoutesScreen', () => {
   it('loads and renders routes', async () => {
-    const mockExecute = jest.fn().mockResolvedValue({
-      rows: [
-        { route_id: 'R1', route_short_name: 'Short 1', route_long_name: 'Long 1' },
-      ],
+    jest.useFakeTimers();
+    const mockExecute = jest.fn().mockImplementation((sql: string) => {
+      if (sql.includes('feed_meta')) {
+        return Promise.resolve({
+          rows: [{ freshnessDate: '2023-01-01' }],
+        });
+      }
+      return Promise.resolve({
+        rows: [
+          { route_id: 'R1', route_short_name: 'Short 1', route_long_name: 'Long 1' },
+        ],
+      });
     });
 
     (openDatabase as jest.Mock).mockResolvedValue({
@@ -28,6 +36,7 @@ describe('RoutesScreen', () => {
             <RoutesScreen navigation={{}} />
         </NavigationContainer>
       );
+      jest.runAllTimers();
     });
 
     const root = renderer!.root;

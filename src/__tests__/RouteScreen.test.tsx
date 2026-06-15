@@ -8,12 +8,29 @@ jest.mock('@/db/Database', () => ({
   openDatabase: jest.fn(),
 }));
 
+// Mock getArrivalDate to return a fixed date in the future for tests
+jest.mock('@/gtfs/utils/time', () => ({
+  getArrivalDate: jest.fn((_time) => {
+      const d = new Date();
+      d.setHours(23, 59, 59); // future
+      return d;
+  }),
+}));
+
 describe('RouteScreen', () => {
-  it('loads and renders stops for a route', async () => {
-    const mockExecute = jest.fn().mockResolvedValue({
-      rows: [
-        { stop_id: 'S1', stop_name: 'Test Stop 1' },
-      ],
+  it('loads and renders stops for a route with next arrival time', async () => {
+    jest.useFakeTimers();
+    const mockExecute = jest.fn().mockImplementation((sql: string) => {
+      if (sql.includes('feed_meta')) {
+        return Promise.resolve({
+          rows: [{ freshnessDate: '2023-01-01' }],
+        });
+      }
+      return Promise.resolve({
+        rows: [
+          { stop_id: 'S1', stop_name: 'Test Stop 1', arrival_time: '12:00:00' },
+        ],
+      });
     });
 
     (openDatabase as jest.Mock).mockResolvedValue({
@@ -34,9 +51,18 @@ describe('RouteScreen', () => {
             <RouteScreen navigation={{}} route={routeProp} />
         </NavigationContainer>
       );
+      jest.runOnlyPendingTimers();
     });
 
     const root = renderer!.root;
-    expect(root.findAllByProps({ title: 'Test Stop 1' }).length).toBeGreaterThanOrEqual(1);
+    // Check if the stop name and arrival time are rendered
+    const sections = root.findAllByProps({ isDarkMode: false }); // Section props
+    const stopSection = sections.find(s => s.props.title === 'Test Stop 1');
+    expect(stopSection).toBeDefined();
+
+    const arrivalText = root.findAllByType(require('react-native').Text).some(t =>
+      t.props.children && t.props.children.toString().includes('Next Arrival:')
+    );
+    expect(arrivalText).toBe(true);
   });
 });
